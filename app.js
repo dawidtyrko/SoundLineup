@@ -1,6 +1,7 @@
 // app.js
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 require('dotenv').config();
 
 const artistRoutes = require('./routes/artistRoutes');
@@ -14,8 +15,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { // Ensure MONGO_URI is set in .env
+// Connect to MongoDB, MONGO_URI set in .env
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
@@ -25,12 +26,12 @@ mongoose.connect(process.env.MONGO_URI, { // Ensure MONGO_URI is set in .env
         process.exit(1);
     });
 
-// Routes
+
 app.use('/api/artists', artistRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/locals', localRoutes);
 app.use('/api/offers', offerRoutes);
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Error handling middleware
 app.use(errorHandler);
 

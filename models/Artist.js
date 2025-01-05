@@ -37,6 +37,20 @@ const artistSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    audioLinks: [{
+        platform: {
+            type: String,
+            required: true, // e.g., "YouTube", "Spotify"
+        },
+        url: {
+            type: String,
+            required: true
+        }
+    }],
+    profileImage: {
+        type: String, // This will store the file path
+        required: false
+    },
     createdAt: {
         type: Date,
         default: Date.now

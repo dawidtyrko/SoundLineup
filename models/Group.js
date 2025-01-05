@@ -32,6 +32,16 @@ const groupSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    audioLinks: [{
+        platform: {
+            type: String,
+            required: true, // e.g., "YouTube", "Spotify"
+        },
+        url: {
+            type: String,
+            required: true
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now

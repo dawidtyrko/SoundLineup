@@ -144,11 +144,99 @@ const deleteArtist = async (req, res) => {
     }
 };
 
+// Add an Audio Link to the Artist's audioLinks
+const addAudioLink = async (artistId, platform, url) => {
+    try {
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            console.error('Artist not found');
+            return { message: 'Artist not found', status: 404 };
+        }
+
+        // Check if the link from the same platform already exists
+        const existingLink = artist.audioLinks.find(link => link.platform === platform);
+        if (existingLink) {
+            console.error(`Audio link from ${platform} already exists`);
+            return { message: `Audio link from ${platform} already exists`, status: 400 };
+        }
+
+        // Add the new audio link
+        artist.audioLinks.push({ platform, url });
+        const updatedArtist = await artist.save();
+
+        console.log('Updated Artist:', updatedArtist);
+        return { message: 'Audio link added successfully', status: 201, artist: updatedArtist };
+    } catch (err) {
+        console.error('Error adding audio link:', err);
+        return { message: 'Internal server error', status: 500 };
+    }
+};
+
+// Delete an Audio Link for the Artist from a specific platform
+const deleteAudioLink = async (artistId, platform) => {
+    try {
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            console.error('Artist not found');
+            return { message: 'Artist not found', status: 404 };
+        }
+
+        // Find the audio link from the specified platform
+        const linkToRemove = artist.audioLinks.find(link => link.platform === platform);
+        if (!linkToRemove) {
+            console.error(`Audio link from ${platform} not found`);
+            return { message: `Audio link from ${platform} not found`, status: 404 };
+        }
+
+        // Remove the audio link
+        artist.audioLinks = artist.audioLinks.filter(link => link.platform !== platform);
+        const updatedArtist = await artist.save();
+
+        console.log('Updated Artist:', updatedArtist);
+        return { message: `Audio link from ${platform} removed successfully`, status: 200, artist: updatedArtist };
+    } catch (err) {
+        console.error('Error deleting audio link:', err);
+        return { message: 'Internal server error', status: 500 };
+    }
+};
+
+const uploadProfileImage = async (artistId, file) => {
+    try {
+
+        if (!file) {
+            console.error('No file uploaded');
+           return{message: "No file uploaded", status:400}
+        }
+
+        const filePath = `uploads/${file.filename}`; // Path where the image is stored
+
+        // Update the artist's profile image
+        const updatedArtist = await Artist.findByIdAndUpdate(
+            artistId,
+            { profileImage: filePath }, // Save file path in the artist document
+            { new: true }
+        );
+
+        if (!updatedArtist) {
+            console.error('Artist not found');
+            return { message: 'Artist not found', status: 404 };
+        }
+
+        return { message: "Profile image uploaded successfully", artist: updatedArtist, status: 200 };
+    } catch (err) {
+        console.error('Error uploading profile image:', err);
+        return { message: err.message, status: 500 };
+    }
+};
+
 module.exports = {
     createArtist,
     getArtists,
     getArtistById,
     updateArtist,
     deleteArtist,
-    addOpinion
+    addOpinion,
+    addAudioLink,
+    deleteAudioLink,
+    uploadProfileImage
 };
