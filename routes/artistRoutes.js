@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { createArtist, getArtists, getArtistById, updateArtist, deleteArtist, addOpinion,addAudioLink,deleteAudioLink,uploadProfileImage } = require('../controllers/artistController');
+const { createArtist, getArtists, getArtistById, updateArtist, deleteArtist, addOpinion,addAudioLink,deleteAudioLink,uploadProfileImage,deleteProfileImage } = require('../controllers/artistController');
 const { artistValidator } = require('../middleware/artistValidator'); // Assuming you have a validator
 const upload = require('../config/multerConfig');
 
@@ -78,7 +78,7 @@ router.put('/:id', artistValidator, async (req, res) => {
 
 // Delete an Artist by ID
 router.delete('/:id', deleteArtist);
-
+router.delete('/:id/profile-image', deleteProfileImage);
 // Route to delete an audio link for a specific platform
 router.delete('/:id/delete-audio-link', async (req, res) => {
     const { platform } = req.body;

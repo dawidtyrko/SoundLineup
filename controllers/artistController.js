@@ -1,6 +1,7 @@
 const Artist = require('../models/Artist');
 const Group = require('../models/Group');
-
+const fs = require('fs');
+const path = require('path');
 
 
 const createArtist = async (req, res) => {
@@ -82,18 +83,6 @@ const updateArtist = async (req, res) => {
     }
 };
 
-// const addOpinion = async (artistId, opinion, localName,localId) => {
-//     try {
-//         const result = await Artist.findByIdAndUpdate(
-//             artistId,
-//             { $push: { opinions: { opinion, localName,localId } } }, // Add the opinion object to the array
-//             { new: true } // Return the updated document
-//         );
-//         console.log('Updated Artist:', result);
-//     } catch (err) {
-//         console.error('Error adding opinion:', err);
-//     }
-// };
 
 const addOpinion = async (artistId, opinion, localName, localId) => {
     try {
@@ -124,6 +113,41 @@ const addOpinion = async (artistId, opinion, localName, localId) => {
 };
 
 
+const deleteProfileImage = async (req, res) => {
+    const artistId = req.params.id;
+
+    try {
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
+        // Check if the artist has a profile image
+        if (artist.profileImage) {
+            const imagePath = path.join(__dirname, '../', artist.profileImage);
+
+            fs.unlink(imagePath, (err) => {
+                if (err) {
+                    console.error('Error deleting image:', err);
+                    return res.status(500).json({ message: "Error deleting image from server" });
+                }
+
+                // Clear the profileImage field in the artist document
+                artist.profileImage = undefined;
+                artist.save();
+
+                return res.status(200).json({ message: "Profile image deleted successfully" });
+            });
+        } else {
+            return res.status(404).json({ message: "No profile image to delete" });
+        }
+    } catch (err) {
+        console.error('Error deleting image:', err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 // Delete an Artist by ID
 const deleteArtist = async (req, res) => {
     try {
@@ -131,6 +155,8 @@ const deleteArtist = async (req, res) => {
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
+        // Delete the profile image if exists
+        await deleteProfileImage(artist);
 
         // If artist was part of a group, remove them from the group's members
         if (artist.groupId) {
@@ -238,5 +264,6 @@ module.exports = {
     addOpinion,
     addAudioLink,
     deleteAudioLink,
-    uploadProfileImage
+    uploadProfileImage,
+    deleteProfileImage
 };
