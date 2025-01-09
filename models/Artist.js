@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcrypt')
 const artistSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -51,10 +51,20 @@ const artistSchema = new mongoose.Schema({
         type: String, // This will store the file path
         required: false
     },
+    password: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
+})
+artistSchema.pre('save', async function (next) {
+    if(this.isModified('password')){
+        this.password = await bcrypt.hash(this.password, 10)
+    }
+    next()
 })
 
 const Artist = mongoose.model('Artist', artistSchema, 'artists'); // Explicitly specifying collection name

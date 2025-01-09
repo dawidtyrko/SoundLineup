@@ -2,10 +2,11 @@ const Artist = require('../models/Artist');
 const Group = require('../models/Group');
 const fs = require('fs');
 const path = require('path');
-
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const createArtist = async (req, res) => {
-    const { name, age, groupId } = req.body;
+    const { name, age, groupId, password } = req.body;
     try {
         // ensure that group exists
         if (groupId) {
@@ -15,9 +16,7 @@ const createArtist = async (req, res) => {
             }
         }
 
-
-
-        const artist = new Artist({ name, age, groupId });
+        const artist = new Artist({ name, age, groupId, password });
         const result = await artist.save();
 
         // If artist is assigned to a group, add them to the group's members
@@ -31,6 +30,53 @@ const createArtist = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+
+const changePassword = async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+    const artistId = req.params.id;
+
+    try{
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(currentPassword, artist.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        artist.password = await bcrypt.hash(newPassword, 10);
+        await artist.save();
+        res.status(200).json({ message: "Artist updated", artist: artist });
+    }catch(err) {
+        console.error("Error changing password:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const loginArtist = async (req, res) => {
+    const {name, password} = req.body;
+
+    try{
+        const artist = await Artist.findOne({name})
+        if(!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, artist.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        //create token
+        //const token = jwt.sign({id: artist._id}, 'Your_jwt_secret', {expiresIn: '1h'});
+        res.status(200).json({ message: "Artist successfully logged in", artist: artist });
+    }catch(err){
+        console.error("Error login artist:", err);
+        res.status(500).json({ message: err.message });
+    }
+}
 
 // Get all Artists
 const getArtists = async (req, res) => {
@@ -265,5 +311,7 @@ module.exports = {
     addAudioLink,
     deleteAudioLink,
     uploadProfileImage,
-    deleteProfileImage
+    deleteProfileImage,
+    loginArtist,
+    changePassword
 };
