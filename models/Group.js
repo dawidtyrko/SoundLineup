@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
 
 const groupSchema = new mongoose.Schema({
     name: {
@@ -46,11 +47,21 @@ const groupSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    password: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
+groupSchema.pre('save', async function (next) {
+    if(this.isModified('password')){
+        this.password = await bcrypt.hash(this.password, 10)
+    }
+    next()
+})
 
 const Group = mongoose.model('Group', groupSchema, 'groups');
 

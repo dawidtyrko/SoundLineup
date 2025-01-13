@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 const createArtist = async (req, res) => {
     const { name, age, groupId, password } = req.body;
@@ -70,8 +71,8 @@ const loginArtist = async (req, res) => {
         }
 
         //create token
-        //const token = jwt.sign({id: artist._id}, 'Your_jwt_secret', {expiresIn: '1h'});
-        res.status(200).json({ message: "Artist successfully logged in", artist: artist });
+        const token = jwt.sign({id: artist._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+        res.status(200).json({ message: "Artist successfully logged in", artist: artist, token: token });
     }catch(err){
         console.error("Error login artist:", err);
         res.status(500).json({ message: err.message });
@@ -83,7 +84,7 @@ const getArtists = async (req, res) => {
     try {
         const artists = await Artist.find()
             .populate('groupId', 'name') // Populate group name
-        res.status(200).json({ message: "Artists retrieved", artists });
+        res.status(200).json({ message: "Artists retrieved", artists: artists });
     } catch (err) {
         console.error("Error retrieving artists:", err);
         res.status(500).json({ message: err.message });
@@ -98,7 +99,7 @@ const getArtistById = async (req, res) => {
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
-        res.status(200).json(artist);
+        res.status(200).json({artist: artist});
     } catch (err) {
         console.error("Error retrieving artist:", err);
         res.status(500).json({ message: err.message });
@@ -130,8 +131,13 @@ const updateArtist = async (req, res) => {
 };
 
 
-const addOpinion = async (artistId, opinion, localName, localId) => {
+const addOpinion = async (req,res) => {
     try {
+        const { opinion, localName, localId } = req.body;  // Extract opinion and localName from request body
+        const artistId = req.params.id;
+        if (!opinion || !localName || !localId) {
+            return res.status(400).json({ message: "Opinion, localId and localName are required" });
+        }
         // Find the artist first to check for existing opinions
         const artist = await Artist.findById(artistId);
         if (!artist) {

@@ -4,13 +4,17 @@ const Artist = require('../models/Artist');
 const res = require("express/lib/response");
 const path = require("path");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const {loginArtist} = require("./artistController");
+require("dotenv").config();
 
 // Create a new Group
 const createGroup = async (req, res) => {
-    const { name,  members } = req.body;
+    const { name,  members, password } = req.body;
     try {
 
-        const group = new Group({ name, members });
+        const group = new Group({ name, members,password });
         const result = await group.save();
 
         // Add groupId to each member
@@ -27,6 +31,53 @@ const createGroup = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+
+const changePassword = async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+    const groupId = req.params.id;
+
+    try{
+        const group = await Group.findById(groupId);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(currentPassword, group.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        group.password = await bcrypt.hash(newPassword, 10);
+        await group.save();
+        res.status(200).json({ message: "Group updated", group: group });
+    }catch(err) {
+        console.error("Error changing password:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const loginGroup = async (req, res) => {
+    const {name, password} = req.body;
+
+    try{
+        const group = await Group.findOne({name})
+        if(!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, group.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        //create token
+        const token = jwt.sign({id: group._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+        res.status(200).json({ message: "Group successfully logged in", group: group, token: token });
+    }catch(err){
+        console.error("Error login artist:", err);
+        res.status(500).json({ message: err.message });
+    }
+}
 
 // Get all Groups
 const getGroups = async (req, res) => {
@@ -261,5 +312,6 @@ module.exports = {
     updateGroup,
     deleteGroup,
     addGroupOpinion,
-    uploadProfileImage
+    uploadProfileImage,
+    loginGroup
 };

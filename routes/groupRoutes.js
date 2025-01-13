@@ -2,35 +2,21 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion } = require('../controllers/groupController');
+const { createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion,loginGroup } = require('../controllers/groupController');
 const { groupValidator } = require('../middleware/groupValidator'); // Assuming you have a validator
+const authenticateToken  = require('../middleware/authenticateToken');
+const {passwordValidation} = require("../middleware/passwordValidator");
+const validateRequest = require('../middleware/validateRequest');
 
 
+router.post('/login', loginGroup)
 // Create a Group
-router.post('/', groupValidator, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+router.post('/', groupValidator,passwordValidation,validateRequest, async (req, res) => {
+
     await createGroup(req, res);
 });
-// router.post('/:id/opinion', async (req, res) => {
-//     const { opinion, localName, localId } = req.body;  // Extract opinion and localName from request body
-//     const groupId = req.params.id;  // Get Group ID from route params
-//
-//     if (!opinion || !localName || !localId) {
-//         return res.status(400).json({ message: "Opinion and localName are required" });
-//     }
-//
-//     try {
-//         await addGroupOpinion(groupId, opinion, localName,localId); // Call the function to add opinion
-//         res.status(200).json({ message: "Opinion added successfully" });
-//     } catch (err) {
-//         console.error('Error adding opinion to group:', err);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// });
-router.post('/:id/opinion', async (req, res) => {
+
+router.post('/:id/opinion', authenticateToken,async (req, res) => {
     const { opinion, localName, localId } = req.body;
     const groupId = req.params.id;
 
@@ -50,7 +36,7 @@ router.post('/:id/opinion', async (req, res) => {
 router.get('/', getGroups);
 
 // Get a single Group by ID
-router.get('/:id', getGroupById);
+router.get('/:id',authenticateToken, getGroupById);
 
 // Update a Group by ID
 router.put('/:id', groupValidator, async (req, res) => {

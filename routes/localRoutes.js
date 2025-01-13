@@ -2,16 +2,16 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { createLocal, getLocals, getLocalById, updateLocal, deleteLocal,addLocalOpinion } = require('../controllers/localController');
+const { createLocal, getLocals, getLocalById, updateLocal, deleteLocal,addLocalOpinion,loginLocal } = require('../controllers/localController');
 const { localValidator } = require('../middleware/localValidator'); // Assuming you have a validator
+const {passwordValidation} = require("../middleware/passwordValidator");
+const validateRequest = require('../middleware/validateRequest');
+const authenticateToken = require('../middleware/authenticateToken');
 
-
+router.post('/login',loginLocal)
 // Create a Local
-router.post('/', localValidator, async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+router.post('/', localValidator,passwordValidation,validateRequest, async (req, res) => {
+
     await createLocal(req, res);
 });
 
@@ -36,7 +36,7 @@ router.post('/:id/opinion', async (req, res) => {
 router.get('/', getLocals);
 
 // Get a single Local by ID
-router.get('/:id', getLocalById);
+router.get('/:id',authenticateToken, getLocalById);
 
 // Update a Local by ID
 router.put('/:id', localValidator, async (req, res) => {

@@ -11,15 +11,6 @@ const artistValidator = [
     body('groupId')
         .optional()
         .isMongoId().withMessage('Group ID must be a valid MongoDB ID')
-    // body('rating')
-    //     .notEmpty().withMessage('Rating is required')
-    //     .isNumeric().withMessage('Number required')
-    //     .custom(value => {
-    //         if (value < 1 || value > 10) {
-    //             throw new Error('Rating must be between 1 and 10');
-    //         }
-    //         return true;
-    //     })
 ];
 
-module.exports = { artistValidator };
+module.exports =  {artistValidator} ;

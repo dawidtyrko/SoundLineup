@@ -1,11 +1,14 @@
 const Local = require('../models/Local');
 const Offer = require('../models/Offer');
-
+const Artist = require("../models/Artist");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 // Create a new Local
 const createLocal = async (req, res) => {
-    const { name, address, country } = req.body;
+    const { name, address, country, password } = req.body;
     try {
-        const local = new Local({ name, address, country });
+        const local = new Local({ name, address, country,password });
         const result = await local.save();
         res.status(201).json({ message: "Local created", local: result });
     } catch (err) {
@@ -13,7 +16,52 @@ const createLocal = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+const changePassword = async (req, res) => {
+    const {currentPassword, newPassword} = req.body;
+    const localId = req.params.id;
 
+    try{
+        const local = await Local.findById(localId);
+        if (!local) {
+            return res.status(404).json({ message: "Local not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(currentPassword, local.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        local.password = await bcrypt.hash(newPassword, 10);
+        await local.save();
+        res.status(200).json({ message: "Local updated", local: local });
+    }catch(err) {
+        console.error("Error changing password:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+const loginLocal = async (req, res) => {
+    const {name, password} = req.body;
+
+    try{
+        const local = await Local.findOne({name})
+        if(!local) {
+            return res.status(404).json({ message: "Local not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, local.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        //create token
+        const token = jwt.sign({id: local._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
+        res.status(200).json({ message: "Local successfully logged in", local: local, token: token });
+    }catch(err){
+        console.error("Error login artist:", err);
+        res.status(500).json({ message: err.message });
+    }
+}
 // Get all Locals
 const getLocals = async (req, res) => {
     try {
@@ -101,5 +149,6 @@ module.exports = {
     getLocalById,
     updateLocal,
     deleteLocal,
-    addLocalOpinion
+    addLocalOpinion,
+    loginLocal
 };

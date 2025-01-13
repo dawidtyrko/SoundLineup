@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require("bcrypt");
 
 const localSchema = new mongoose.Schema({
     name: {
@@ -33,6 +34,10 @@ const localSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    password: {
+        type: String,
+        required: true
+    },
     country: {
         type: String,
         required: true,
@@ -43,7 +48,12 @@ const localSchema = new mongoose.Schema({
         default: Date.now
     }
 });
-
+localSchema.pre('save', async function (next) {
+    if(this.isModified('password')){
+        this.password = await bcrypt.hash(this.password, 10)
+    }
+    next()
+})
 const Local = mongoose.model('Local', localSchema, 'locals');
 
 module.exports = Local;
