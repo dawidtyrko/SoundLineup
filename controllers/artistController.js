@@ -131,6 +131,7 @@ const updateArtist = async (req, res) => {
 };
 
 
+
 const addOpinion = async (req,res) => {
     try {
         const { opinion, localName, localId } = req.body;  // Extract opinion and localName from request body
@@ -163,6 +164,50 @@ const addOpinion = async (req,res) => {
         return { message: 'Internal server error', status: 500 };
     }
 };
+
+const addRating = async (req, res) => {
+    try {
+        const { rating, localId } = req.body;  // Extract rating and localId from request body
+        const artistId = req.params.id; // Artist ID from the route parameter
+
+        // Validate required fields
+        if (!rating || !localId) {
+            return res.status(400).json({ message: "Rating and localId are required" });
+        }
+
+        // Ensure the rating is within the valid range
+        if (rating < 1 || rating > 10) {
+            return res.status(400).json({ message: "Rating must be between 1 and 10" });
+        }
+
+
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            console.error('Artist not found');
+            return res.status(404).json({ message: 'Artist not found' });
+        }
+
+        // Check if a rating from the same localId already exists
+        const existingRating = artist.ratings.find(rating => rating.localId === localId);
+        if (existingRating) {
+            console.error('Rating from this local already exists');
+            return res.status(400).json({ message: 'Rating from this local already exists' });
+        }
+
+        // Add the new rating to the artist's ratings array
+        artist.ratings.push({ rating, localId });
+
+        // Save the updated artist data
+        const updatedArtist = await artist.save();
+
+        console.log('Updated Artist:', updatedArtist);
+        return res.status(201).json({ message: 'Rating added successfully', artist: updatedArtist });
+    } catch (err) {
+        console.error('Error adding rating:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 
 
 const deleteProfileImage = async (req, res) => {
@@ -319,5 +364,6 @@ module.exports = {
     uploadProfileImage,
     deleteProfileImage,
     loginArtist,
-    changePassword
+    changePassword,
+    addRating
 };

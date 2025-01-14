@@ -15,11 +15,21 @@ const artistSchema = new mongoose.Schema({
         ref: 'Group',
         default: null // Optional: An artist may or may not belong to a group
     },
-    rating: {
-      type: Number,
-      min: 1,
-      max: 10,
-    },
+    ratings: [{
+        rating:{
+            type: Number,
+            min: 1,
+            max: 10,
+        },
+        localId: {
+            type: String,
+            required: true,
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     opinions: [{
         opinion: {
             type: String,

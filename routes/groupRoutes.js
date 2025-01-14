@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion,loginGroup } = require('../controllers/groupController');
+const {addRating, createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion,loginGroup } = require('../controllers/groupController');
 const { groupValidator } = require('../middleware/groupValidator'); // Assuming you have a validator
 const authenticateToken  = require('../middleware/authenticateToken');
 const {passwordValidation} = require("../middleware/passwordValidator");
@@ -15,6 +15,7 @@ router.post('/', groupValidator,passwordValidation,validateRequest, async (req, 
 
     await createGroup(req, res);
 });
+router.post('/:id/rating',authenticateToken,addRating)
 
 router.post('/:id/opinion', authenticateToken,async (req, res) => {
     const { opinion, localName, localId } = req.body;

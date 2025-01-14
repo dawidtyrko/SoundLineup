@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { changePassword,createArtist, getArtists, getArtistById, updateArtist, deleteArtist, addOpinion,addAudioLink,deleteAudioLink,uploadProfileImage,deleteProfileImage, loginArtist } = require('../controllers/artistController');
+const { addRating,changePassword,createArtist, getArtists, getArtistById, updateArtist, deleteArtist, addOpinion,addAudioLink,deleteAudioLink,uploadProfileImage,deleteProfileImage, loginArtist } = require('../controllers/artistController');
 const  {artistValidator}  = require('../middleware/artistValidator'); // Assuming you have a validator
 const upload = require('../config/multerConfig');
 const {passwordValidation} = require("../middleware/passwordValidator");
@@ -12,7 +12,7 @@ router.post('/login',loginArtist)
 // Create an Artist
 router.post('/', artistValidator,passwordValidation,validateRequest, createArtist);
 
-
+router.post('/:id/rating',authenticateToken,addRating)
 router.post('/:id/opinion',authenticateToken,addOpinion)
 
 // Route to add an audio link to an artist

@@ -161,6 +161,49 @@ const deleteGroup = async (req, res) => {
     }
 };
 
+const addRating = async (req, res) => {
+    try {
+        const { rating, localId } = req.body;  // Extract rating and localId from request body
+        const groupId = req.params.id; // Artist ID from the route parameter
+
+        // Validate required fields
+        if (!rating || !localId) {
+            return res.status(400).json({ message: "Rating and localId are required" });
+        }
+
+        // Ensure the rating is within the valid range
+        if (rating < 1 || rating > 10) {
+            return res.status(400).json({ message: "Rating must be between 1 and 10" });
+        }
+
+
+        const group = await Group.findById(groupId);
+        if (!group) {
+            console.error('Group not found');
+            return res.status(404).json({ message: 'Group not found' });
+        }
+
+        // Check if a rating from the same localId already exists
+        const existingRating = group.ratings.find(rating => rating.localId === localId);
+        if (existingRating) {
+            console.error('Rating from this local already exists');
+            return res.status(400).json({ message: 'Rating from this local already exists' });
+        }
+
+        // Add the new rating to the artist's ratings array
+        group.ratings.push({ rating, localId });
+
+        // Save the updated artist data
+        const updatedGroup = await group.save();
+
+        console.log('Updated Group:', updatedGroup);
+        return res.status(201).json({ message: 'Rating added successfully', group: updatedGroup });
+    } catch (err) {
+        console.error('Error adding rating:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 const addGroupOpinion = async (groupId, opinion, localName, localId) => {
     try {
         const group = await Group.findById(groupId);
@@ -313,5 +356,6 @@ module.exports = {
     deleteGroup,
     addGroupOpinion,
     uploadProfileImage,
-    loginGroup
+    loginGroup,
+    addRating
 };

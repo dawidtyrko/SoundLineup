@@ -11,11 +11,21 @@ const groupSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Artist'
     }],
-    rating: {
-        type: Number,
-        min: 1,
-        max: 10,
-    },
+    ratings: [{
+        rating:{
+            type: Number,
+            min: 1,
+            max: 10,
+        },
+        localId: {
+            type: String,
+            required: true
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     opinions: [{
         opinion: {
             type: String,
