@@ -1,15 +1,18 @@
 'use client'
 import {useEffect, useState} from "react";
 import {getArtistById} from "@/app/services/artistService";
-import {useParams} from "next/navigation";
 import ClipLoader from 'react-spinners/ClipLoader'
 import {useRouter} from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+
 
 const ArtistDetails = ({id}) => {
 
     const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         if(!id) return
@@ -37,14 +40,19 @@ const ArtistDetails = ({id}) => {
     if(!artist) {
         return <p>Artist data not available.</p>
     }
+    // if(artist.groupId != null){
+    //     console.log(artist.groupId._id);
+    //     console.log(artist.groupId);
+    // }
+    //console.log(artist.profileImage);
 
     return (
         <div>
-
             <h1>{artist.name}</h1>
             <p>Age: {artist.age}</p>
             {/*<p>Rating: </p>*/}
-            {artist.groupId && <p>Group: {artist.groupId.name}</p>}
+            {artist.groupId && <p>Group: <Link href={`/groups/${artist.groupId._id}`}> {artist.groupId.name}</Link></p>}
+            {artist.profileImage && (<Image src={`http://localhost:3001/${artist.profileImage}`} alt={artist.name} className="circular-image" width={150} height={150} />)}
             <h2>Opinions</h2>
             <ul>
                 {artist.opinions.map((opinion, index) => (
@@ -54,7 +62,7 @@ const ArtistDetails = ({id}) => {
                     </li>
                 ))}
             </ul>
-            <h2>Audio Links</h2>
+            <h1>Audio Links</h1>
             <ul>
                 {artist.audioLinks.map((link, index) => (
                     <li key={index}>
@@ -64,7 +72,7 @@ const ArtistDetails = ({id}) => {
                     </li>
                 ))}
             </ul>
-            {artist.profileImage && <Image src={artist.profileImage} alt={artist.name} fill/>}
+
         </div>
     )
 }

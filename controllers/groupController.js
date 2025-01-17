@@ -32,6 +32,35 @@ const createGroup = async (req, res) => {
     }
 };
 
+const addMemberToGroup = async (req, res) => {
+    const { groupId, artistId } = req.body;
+
+    try {
+        // Find the group by ID
+        const group = await Group.findById(groupId);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        // Check if the artist is already a member of the group
+        if (group.members.includes(artistId)) {
+            return res.status(400).json({ message: "Artist is already a member of this group" });
+        }
+
+        // Add the artist to the group's members array
+        group.members.push(artistId);
+        await group.save();
+
+        // Update the artist's groupId
+        await Artist.findByIdAndUpdate(artistId, { groupId: group._id });
+
+        res.status(200).json({ message: "Artist added to group", group });
+    } catch (err) {
+        console.error("Error adding member to group:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const changePassword = async (req, res) => {
     const {currentPassword, newPassword} = req.body;
     const groupId = req.params.id;
@@ -72,7 +101,7 @@ const loginGroup = async (req, res) => {
 
         //create token
         const token = jwt.sign({id: group._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
-        res.status(200).json({ message: "Group successfully logged in", group: group, token: token });
+        res.status(200).json({ message: "Group successfully logged in", user: group, token: token });
     }catch(err){
         console.error("Error login artist:", err);
         res.status(500).json({ message: err.message });
@@ -357,5 +386,8 @@ module.exports = {
     addGroupOpinion,
     uploadProfileImage,
     loginGroup,
-    addRating
+    addRating,
+    addAudioLink,
+    deleteAudioLink,
+    addMemberToGroup
 };

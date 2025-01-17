@@ -10,7 +10,7 @@ const groupRoutes = require('./routes/groupRoutes');
 const localRoutes = require('./routes/localRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const errorHandler = require('./middleware/errorHandler');
-
+const authenticateToken = require('./middleware/authenticateToken');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -33,7 +33,9 @@ mongoose.connect(process.env.MONGO_URI, {
         process.exit(1);
     });
 
-
+app.use('/check-token',authenticateToken, (req, res, next) => {
+    res.status(200).json({message:'Token is valid'})
+})
 app.use('/api/artists', artistRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/locals', localRoutes);

@@ -72,7 +72,7 @@ const loginArtist = async (req, res) => {
 
         //create token
         const token = jwt.sign({id: artist._id}, process.env.JWT_SECRET, {expiresIn: '1h'});
-        res.status(200).json({ message: "Artist successfully logged in", artist: artist, token: token });
+        res.status(200).json({ message: "Artist successfully logged in", user: artist, token: token });
     }catch(err){
         console.error("Error login artist:", err);
         res.status(500).json({ message: err.message });
@@ -108,13 +108,20 @@ const getArtistById = async (req, res) => {
 
 // Update an Artist by ID
 const updateArtist = async (req, res) => {
-    const { groupId } = req.body;
+    const { groupName } = req.body;
     try {
+        let groupId
         // If groupId is being updated, ensure the new group exists
-        if (groupId) {
-            const group = await Group.findById(groupId);
+        if (groupName) {
+            const group = await Group.findOne({name:groupName});
             if (!group) {
                 return res.status(404).json({ message: "Group not found" });
+            }
+            groupId = group._id
+
+            const isMember = group.members.includes(req.params.id);
+            if (!isMember) {
+                return res.status(403).json({ message: "Artist is not a member of this group" })
             }
         }
 

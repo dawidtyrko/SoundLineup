@@ -1,7 +1,9 @@
 const API_BASE_URL = 'http://localhost:3001/api/artists/';
+const LOGIN_BASE_URL = 'http://localhost:3001/api';
 
-export async function loginArtist(name, password){
-    const response = await fetch(`${API_BASE_URL}/login`, {
+//general function to log in the user (artist/group/local)
+export async function loginArtist(name, password, userType){
+    const response = await fetch(`${LOGIN_BASE_URL}/${userType}/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -13,6 +15,18 @@ export async function loginArtist(name, password){
 }
 export async function getArtists() {
     const response = await fetch(API_BASE_URL);
+    return handleResponse(response);
+}
+
+export async function updateArtistById(artistId, updatedData) {
+    const response = await fetch(`${API_BASE_URL}${artistId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token-based auth
+        },
+        body: JSON.stringify(updatedData),
+    });
     return handleResponse(response);
 }
 
