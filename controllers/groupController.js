@@ -113,7 +113,7 @@ const getGroups = async (req, res) => {
     try {
         const groups = await Group.find()
             .populate('members', 'name age');
-        res.status(200).json({ message: "Groups retrieved", groups });
+        res.status(200).json({ message: "Groups retrieved", groups: groups });
     } catch (err) {
         console.error("Error retrieving groups:", err);
         res.status(500).json({ message: err.message });
@@ -128,7 +128,7 @@ const getGroupById = async (req, res) => {
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
-        res.status(200).json(group);
+        res.status(200).json({message: "Groups retrieved", group: group});
     } catch (err) {
         console.error("Error retrieving group:", err);
         res.status(500).json({ message: err.message });

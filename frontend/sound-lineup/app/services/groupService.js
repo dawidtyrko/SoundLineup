@@ -20,6 +20,16 @@ export async function getGroups(token){
             'Authorization': `Bearer ${token}`
         }
     })
+    return handleResponse(response);
+
+}
+export async function getGroup(groupId,token){
+    const response = await fetch(`${API_BASE_URL}${groupId}`,{
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`}
+    });
+    return handleResponse(response);
 }
 
 export async function handleResponse(response){
