@@ -5,10 +5,12 @@ import {useRouter} from "next/navigation";
 import {updateArtistById} from "@/app/services/artistService";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import {useAuth} from "@/app/AuthContext";
 
 
 const EditArtist = ({ artist,onUpdate }) => {
     const router = useRouter();
+    const {token} = useAuth()
 
     const validationSchema = Yup.object({
         name: Yup.string()
@@ -25,10 +27,12 @@ const EditArtist = ({ artist,onUpdate }) => {
 
     const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
         try {
-            await updateArtistById(artist._id, values);
+            setSubmitting(true)
+            await updateArtistById(artist._id, values,token);
             onUpdate({...artist, ...values});
             router.push(`/profile`);
         } catch (err) {
+            setSubmitting(false);
             setFieldError('general', err.message);
         } finally {
             setSubmitting(false);

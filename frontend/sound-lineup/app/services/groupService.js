@@ -1,3 +1,5 @@
+import {token} from "morgan";
+
 const API_BASE_URL = 'http://localhost:3001/api/groups/';
 
 export async function addMemberToGroup(groupId, artistId, token) {
@@ -29,6 +31,18 @@ export async function getGroup(groupId,token){
         headers: {'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`}
     });
+    return handleResponse(response);
+}
+
+export async function updateGroup(groupId, groupData,token){
+    const response = await fetch(`${API_BASE_URL}${groupId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(groupData),
+    })
     return handleResponse(response);
 }
 

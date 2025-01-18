@@ -18,12 +18,12 @@ export async function getArtists() {
     return handleResponse(response);
 }
 
-export async function updateArtistById(artistId, updatedData) {
+export async function updateArtistById(artistId, updatedData, token) {
     const response = await fetch(`${API_BASE_URL}${artistId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token-based auth
+            'Authorization': `Bearer ${token}` // Assuming token-based auth
         },
         body: JSON.stringify(updatedData),
     });

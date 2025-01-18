@@ -40,7 +40,7 @@ const ArtistProfile = ({user}) => {
         return <p>Artist data not available.</p>
     }
 
-    console.log(artist.groupId);
+    //console.log(artist.groupId);
     return (
         <div>
             <h1>{artist.name}</h1>
