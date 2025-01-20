@@ -7,9 +7,11 @@ import {useRouter} from "next/navigation";
 import EditArtist from "@/app/components/EditArtist";
 import Modal from "@/app/components/Modal";
 import Link from "next/link";
-
-const ArtistProfile = ({user}) => {
-
+import {useAuth} from "@/app/AuthContext";
+import UploadProfileImage from "@/app/components/UploadProfileImage";
+import Image from "next/image";
+const ArtistProfile = () => {
+    const {user,token,userType,login,logout} = useAuth()
     const [artist, setArtist] = useState(user);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,17 +19,15 @@ const ArtistProfile = ({user}) => {
     const router = useRouter();
 
     useEffect(() => {
-        if (!user) {
-            setError('No artist data available');
+        if (user) {
             setLoading(false);
-            return;
+            setArtist(user)
         }
-        setArtist(user);
-        setLoading(false);
     }, [user]);
 
     const handleUpdateArtist = (updatedArtist) => {
         setArtist(updatedArtist);
+        login(updatedArtist, token,userType);
     }
     if (loading) {
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
@@ -66,11 +66,15 @@ const ArtistProfile = ({user}) => {
                     </li>
                 ))}
             </ul>
-            {artist.profileImage && (<Image src={`http://localhost:3001/${artist.profileImage}`} alt={artist.name} className='circular-image' width={150} height={150} />)}
+            {artist.profileImage && (
+                <Image src={`http://localhost:3001/${artist.profileImage}`} alt={artist.name} className='circular-image'
+                       width={150} height={150}/>)}
+            <button onClick={() => logout()}>Logout</button>
             <button onClick={() => setEditing(true)}>Edit Profile</button>
             <Modal isOpen={editing} onClose={() => setEditing(false)}>
                 <EditArtist artist={artist} onUpdate={handleUpdateArtist}/>
             </Modal>
+            <UploadProfileImage artistId={artist._id}/>
         </div>
     )
 }

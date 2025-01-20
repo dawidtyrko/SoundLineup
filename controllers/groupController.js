@@ -11,19 +11,19 @@ require("dotenv").config();
 
 // Create a new Group
 const createGroup = async (req, res) => {
-    const { name,  members, password } = req.body;
+    const { name, password } = req.body;
     try {
 
         const group = new Group({ name, members,password });
         const result = await group.save();
 
         // Add groupId to each member
-        if (members && members.length > 0) {
-            await Artist.updateMany(
-                { _id: { $in: members } },
-                { $set: { groupId: result._id } }
-            );
-        }
+        // if (members && members.length > 0) {
+        //     await Artist.updateMany(
+        //         { _id: { $in: members } },
+        //         { $set: { groupId: result._id } }
+        //     );
+        // }
 
         res.status(201).json({ message: "Group created", group: result });
     } catch (err) {
@@ -33,28 +33,36 @@ const createGroup = async (req, res) => {
 };
 
 const addMemberToGroup = async (req, res) => {
-    const { groupId, artistId } = req.body;
+    const { groupId, artistName } = req.body;
 
     try {
         // Find the group by ID
-        const group = await Group.findById(groupId);
+        const group = await Group.findById(groupId)
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
 
+        const artist = await Artist.findOne({name: artistName})
+        if (!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
         // Check if the artist is already a member of the group
-        if (group.members.includes(artistId)) {
+        if (group.members.includes(artist._id)) {
             return res.status(400).json({ message: "Artist is already a member of this group" });
         }
 
         // Add the artist to the group's members array
-        group.members.push(artistId);
+        group.members.push(artist._id);
         await group.save();
 
         // Update the artist's groupId
-        await Artist.findByIdAndUpdate(artistId, { groupId: group._id });
+        await Artist.findByIdAndUpdate(artist._id, { groupId: group._id });
 
-        res.status(200).json({ message: "Artist added to group", group });
+        const updatedGroup = await Group.findById(groupId)
+            .populate('members', 'name age');
+
+        res.status(200).json({ message: "Artist added to group", group: updatedGroup });
     } catch (err) {
         console.error("Error adding member to group:", err);
         res.status(500).json({ message: "Internal server error" });
@@ -90,6 +98,7 @@ const loginGroup = async (req, res) => {
 
     try{
         const group = await Group.findOne({name})
+            .populate("members","name age")
         if(!group) {
             return res.status(404).json({ message: "Group not found" });
         }

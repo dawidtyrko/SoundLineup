@@ -49,10 +49,15 @@ const GroupDetails = ({id}) => {
     if(!group) {
         return <p>Group data not available.</p>
     }
+    const averageRating = group.ratings.length > 0
+        ? (group.ratings.reduce((sum, rating) => sum + rating.rating, 0) / group.ratings.length).toFixed(1)
+        : "No ratings yet";
 
     return (
         <div>
             <h1>{group.name}</h1>
+            <h2>Ratings</h2>
+            <p>Average Rating: {averageRating}</p>
             <h2>Members:</h2>
             <ul>
                 {group.members.map((member) => (

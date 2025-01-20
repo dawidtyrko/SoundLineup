@@ -32,7 +32,6 @@ const EditArtist = ({ artist,onUpdate }) => {
             onUpdate({...artist, ...values});
             router.push(`/profile`);
         } catch (err) {
-            setSubmitting(false);
             setFieldError('general', err.message);
         } finally {
             setSubmitting(false);

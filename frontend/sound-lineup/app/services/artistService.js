@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3001/api/artists/';
+const API_BASE_URL = 'http://localhost:3001/api/artists';
 const LOGIN_BASE_URL = 'http://localhost:3001/api';
 
 //general function to log in the user (artist/group/local)
@@ -19,7 +19,7 @@ export async function getArtists() {
 }
 
 export async function updateArtistById(artistId, updatedData, token) {
-    const response = await fetch(`${API_BASE_URL}${artistId}`, {
+    const response = await fetch(`${API_BASE_URL}/${artistId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -34,8 +34,26 @@ export async function createArtist(artistData) {
     const response = await fetch(API_BASE_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(artistData),
+        body: JSON.stringify({
+            name: artistData.name,
+            age: artistData.age,
+            password: artistData.password
+        }),
     });
+    return handleResponse(response);
+}
+export async function uploadProfileImage(artistId, file, token) {
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    const response = await fetch(`${API_BASE_URL}/upload/${artistId}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`, // Include token for authentication
+        },
+        body: formData,
+    });
+
     return handleResponse(response);
 }
 

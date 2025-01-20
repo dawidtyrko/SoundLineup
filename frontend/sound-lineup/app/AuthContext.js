@@ -50,11 +50,11 @@ export const AuthProvider = ({ children }) => {
             logout(); // Logout if token is invalid or expired
         }
     };
-    useEffect(() => {
-        if (token) {
-            validateToken();
-        }
-    },[token])
+    // useEffect(() => {
+    //     if (token) {
+    //         validateToken();
+    //     }
+    // },[token])
 
     const login = (userData, tokenData, userTypeData) => {
         setUser(userData);

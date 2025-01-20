@@ -9,7 +9,7 @@ const {passwordValidation} = require("../middleware/passwordValidator");
 const validateRequest = require('../middleware/validateRequest');
 
 
-router.post('/login', loginGroup)
+router.post('/login',loginGroup)
 router.post('/add-member',authenticateToken,addMemberToGroup)
 // Create a Group
 router.post('/', groupValidator,passwordValidation,validateRequest, async (req, res) => {

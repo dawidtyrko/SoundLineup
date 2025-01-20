@@ -7,23 +7,17 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const createArtist = async (req, res) => {
-    const { name, age, groupId, password } = req.body;
+    const { name, age, password } = req.body;
+
     try {
-        // ensure that group exists
-        if (groupId) {
-            const group = await Group.findById(groupId);
-            if (!group) {
-                return res.status(404).json({ message: "Group not found" });
-            }
-        }
+        // Create the artist
+        const artist = new Artist({
+            name,
+            age,
+            password,
+        });
 
-        const artist = new Artist({ name, age, groupId, password });
         const result = await artist.save();
-
-        // If artist is assigned to a group, add them to the group's members
-        if (groupId) {
-            await Group.findByIdAndUpdate(groupId, { $push: { members: result._id } });
-        }
 
         res.status(201).json({ message: "Artist created", artist: result });
     } catch (err) {
@@ -31,6 +25,7 @@ const createArtist = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
+
 
 const changePassword = async (req, res) => {
     const {currentPassword, newPassword} = req.body;
@@ -352,7 +347,7 @@ const uploadProfileImage = async (artistId, file) => {
             return { message: 'Artist not found', status: 404 };
         }
 
-        return { message: "Profile image uploaded successfully", artist: updatedArtist, status: 200 };
+        return { message: "Profile image uploaded successfully", user: updatedArtist, status: 200 };
     } catch (err) {
         console.error('Error uploading profile image:', err);
         return { message: err.message, status: 500 };

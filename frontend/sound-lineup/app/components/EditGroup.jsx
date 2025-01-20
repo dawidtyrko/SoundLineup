@@ -25,7 +25,7 @@ const EditGroup = ({group,onUpdate}) => {
             router.push(`/profile`);
         }catch(err){
             setSubmitting(false)
-            setFieldError('general',err)
+            setFieldError('general',err.message);
         }finally{
             setSubmitting(false);
         }
