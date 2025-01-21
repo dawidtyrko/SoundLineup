@@ -15,7 +15,7 @@ export default function Home() {
       }else{
         validateToken()
       }
-  },[token, user, router])
+  },[token, user])
 
   return (
       <>

@@ -1,17 +1,13 @@
 import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import { Formik, Field, Form, ErrorMessage } from "formik";
-import { createArtist } from "@/app/services/artistService";
+import { createGroup } from "@/app/services/groupService";
 
 
 const validationSchema = Yup.object({
     name: Yup.string()
         .required('Name is required')
         .min(2, 'Name must be at least 2 characters long'),
-    age: Yup.number()
-        .required('Age is required')
-        .min(1, 'Age must be at least 1')
-        .max(150, 'Age must be 150 or less'),
     password: Yup.string()
         .required('Password is required')
         .min(6, 'Password must be at least 6 characters long'),
@@ -20,13 +16,13 @@ const validationSchema = Yup.object({
         .required('Confirm Password is required'),
 });
 
-const CreateArtist = () => {
+const CreateGroup = () => {
     const router = useRouter();
 
     const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
         try {
             setSubmitting(true);
-            await createArtist(values);
+            await createGroup(values);
             router.push('/login');
         } catch (err) {
             setFieldError("general", err.message);
@@ -35,11 +31,10 @@ const CreateArtist = () => {
 
     return (
         <div className="form-container">
-            <h1 style={{color:"gray"}}>Create Artist Account</h1>
+            <h1>Create Group Account</h1>
             <Formik
                 initialValues={{
                     name: '',
-                    age: '',
                     password: '',
                     confirmPassword: '',
                 }}
@@ -57,17 +52,6 @@ const CreateArtist = () => {
                                 className="input"
                             />
                             <ErrorMessage name="name" component="div" className="error"/>
-                        </div>
-
-                        <div className="form-field">
-                            <label htmlFor="age">Age</label>
-                            <Field
-                                type="number"
-                                name="age"
-                                id="age"
-                                className="input"
-                            />
-                            <ErrorMessage name="age" component="div" className="error"/>
                         </div>
 
                         <div className="form-field">
@@ -116,4 +100,4 @@ const CreateArtist = () => {
     );
 };
 
-export default CreateArtist;
+export default CreateGroup;

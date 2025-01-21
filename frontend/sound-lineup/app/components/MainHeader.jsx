@@ -7,7 +7,7 @@ import {usePathname} from "next/navigation";
 
 export default function MainHeader() {
     const pathname = usePathname()
-    const isLoginPage = pathname.startsWith("/login");
+    const isLoginPage = pathname.startsWith("/login") || pathname.startsWith("/register");
     return (
         <>
             <header className={classes.header}>

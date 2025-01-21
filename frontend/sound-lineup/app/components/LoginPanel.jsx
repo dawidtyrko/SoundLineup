@@ -1,9 +1,10 @@
 'use client'
-
+import classes from './LoginPanel.module.css'
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {loginArtist} from "@/app/services/artistService";
-import {useAuth} from "@/app/AuthContext";
+import { loginArtist } from "@/app/services/artistService";
+import { useAuth } from "@/app/AuthContext";
+import Link from "next/link";
 
 const LoginPanel = () => {
     const [name, setName] = useState('');
@@ -11,7 +12,7 @@ const LoginPanel = () => {
     const [userType, setUserType] = useState('artists'); // default to artist
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const {login} = useAuth();
+    const { login } = useAuth();
     const router = useRouter();
 
     const handleSubmit = async (e) => {
@@ -19,13 +20,12 @@ const LoginPanel = () => {
         setLoading(true);
 
         try {
-           const data = await loginArtist(name, password,userType);
+            const data = await loginArtist(name, password, userType);
 
-           if (data && data.token){
-               console.log(data);
-               login(data.user, data.token, userType);
-               router.push(`/`);
-           }
+            if (data && data.token) {
+                login(data.user, data.token, userType);
+                router.push(`/`);
+            }
 
         } catch (err) {
             setError(err.message);
@@ -35,37 +35,58 @@ const LoginPanel = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Login</h2>
-            {error && <p>Error: {error}</p>}
-            <label>
-                Name:
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-            </label>
-            <label>
-                Password:
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </label>
-            <label>
-                User Type:
-                <select value={userType} onChange={(e) => setUserType(e.target.value)}>
-                    <option value="artists">Artist</option>
-                    <option value="groups">Group</option>
-                    <option value="locals">Local</option>
-                </select>
-            </label>
-            <button type="submit" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
-            </button>
-        </form>
+        <div className={classes.formContainer}>
+            <form onSubmit={handleSubmit}>
+                <h1 className={classes.headerOne}>Login</h1>
+                {error && <p className={classes.error}>Error: {error}</p>}
+
+                <div className={classes.formField}>
+                    <label htmlFor="name" className={classes.labelFields}>Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className={classes.input}
+                    />
+                </div>
+
+                <div className={classes.formField}>
+                    <label htmlFor="password" className={classes.labelFields}>Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={classes.input}
+                    />
+                </div>
+
+                <div className={classes.formField}>
+                    <label htmlFor="userType" className={classes.labelFields}>User Type</label>
+                    <select
+                        id="userType"
+                        value={userType}
+                        onChange={(e) => setUserType(e.target.value)}
+                        className={classes.select}
+                    >
+                        <option value="artists">Artist</option>
+                        <option value="groups">Group</option>
+                        <option value="locals">Local</option>
+                    </select>
+                </div>
+
+                <div className={classes.formField}>
+                    <button type="submit" disabled={loading} className={classes.submitBtn}>
+                        {loading ? 'Logging in...' : 'Login'}
+                    </button>
+                </div>
+            </form>
+            <Link href="/register" className={classes.registerLink}>
+                Don't have an account? <span>Register!</span>
+            </Link>
+
+        </div>
     );
 };
 

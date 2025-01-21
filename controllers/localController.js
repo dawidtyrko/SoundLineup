@@ -66,7 +66,7 @@ const loginLocal = async (req, res) => {
 const getLocals = async (req, res) => {
     try {
         const locals = await Local.find();
-        res.status(200).json({ message: "Locals retrieved", locals });
+        res.status(200).json({ message: "Locals retrieved", locals:locals });
     } catch (err) {
         console.error("Error retrieving locals:", err);
         res.status(500).json({ message: err.message });
@@ -80,7 +80,7 @@ const getLocalById = async (req, res) => {
         if (!local) {
             return res.status(404).json({ message: "Local not found" });
         }
-        res.status(200).json(local);
+        res.status(200).json({message: "Local found", local:local});
     } catch (err) {
         console.error("Error retrieving local:", err);
         res.status(500).json({ message: err.message });

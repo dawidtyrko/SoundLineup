@@ -38,6 +38,10 @@ const localSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    profileImage: {
+        type: String,
+        required: false
+    },
     country: {
         type: String,
         required: true,

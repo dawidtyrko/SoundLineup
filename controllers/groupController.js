@@ -14,7 +14,7 @@ const createGroup = async (req, res) => {
     const { name, password } = req.body;
     try {
 
-        const group = new Group({ name, members,password });
+        const group = new Group({ name,password });
         const result = await group.save();
 
         // Add groupId to each member

@@ -37,6 +37,9 @@ export default function ArtistsPage () {
     if (loading) {
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
     }
+    if (error) {
+        return <p className="error">Error: {error.message}</p>;
+    }
     return (
         <ArtistList artists={artists}/>
     );
