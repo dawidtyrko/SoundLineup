@@ -5,11 +5,13 @@ import ArtistList from "@/app/components/ArtistList";
 import {useAuth} from "@/app/AuthContext";
 import {useRouter} from "next/navigation";
 import ClipLoader from "react-spinners/ClipLoader";
-
+import './artistList.css'
 export default function ArtistsPage () {
     const {user,token} = useAuth()
     const [artists, setArtists] = useState([])
     const [loading, setLoading] = useState(true)
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredArtists, setFilteredArtists] = useState([])
     const [artist, setArtist] = useState(user)
     const router = useRouter();
 
@@ -34,6 +36,16 @@ export default function ArtistsPage () {
         }
         fetchArtists()
     },[])
+
+    useEffect(() => {
+
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const filtered = artists.filter(artist =>
+            artist.name.toLowerCase().includes(lowerCaseQuery)
+        );
+        setFilteredArtists(filtered);
+    }, [searchQuery, artists]);
+
     if (loading) {
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
     }
@@ -41,6 +53,14 @@ export default function ArtistsPage () {
         return <p className="error">Error: {error.message}</p>;
     }
     return (
-        <ArtistList artists={artists}/>
+        <div className="container">
+            <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"/>
+        <ArtistList artists={filteredArtists}/>
+        </div>
     );
 }

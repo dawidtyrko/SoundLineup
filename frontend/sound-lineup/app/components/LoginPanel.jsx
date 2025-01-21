@@ -41,21 +41,23 @@ const LoginPanel = () => {
                 {error && <p className={classes.error}>Error: {error}</p>}
 
                 <div className={classes.formField}>
-                    <label htmlFor="name" className={classes.labelFields}>Name</label>
+                    <label htmlFor="name" className={classes.labelFields} style={{color:'black'}}>Name</label>
                     <input
                         type="text"
                         id="name"
                         value={name}
+                        placeholder="Enter your name"
                         onChange={(e) => setName(e.target.value)}
                         className={classes.input}
                     />
                 </div>
 
                 <div className={classes.formField}>
-                    <label htmlFor="password" className={classes.labelFields}>Password</label>
+                    <label htmlFor="password" className={classes.labelFields} style={{color:'black'}}>Password</label>
                     <input
                         type="password"
                         id="password"
+                        placeholder="Enter your password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={classes.input}
@@ -63,7 +65,7 @@ const LoginPanel = () => {
                 </div>
 
                 <div className={classes.formField}>
-                    <label htmlFor="userType" className={classes.labelFields}>User Type</label>
+                    <label htmlFor="userType" className={classes.labelFields} style={{color:'black'}}>User Type</label>
                     <select
                         id="userType"
                         value={userType}

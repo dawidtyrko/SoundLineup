@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import * as Yup from "yup";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { createGroup } from "@/app/services/groupService";
-
+import classes from "./CreateArtist.module.css";
 
 const validationSchema = Yup.object({
     name: Yup.string()
@@ -30,8 +30,8 @@ const CreateGroup = () => {
     };
 
     return (
-        <div className="form-container">
-            <h1>Create Group Account</h1>
+        <div className={classes.formContainer}>
+            <h1 className={classes.headerOne} style={{color:"black"}}>Create Group Account</h1>
             <Formik
                 initialValues={{
                     name: '',
@@ -43,52 +43,52 @@ const CreateGroup = () => {
             >
                 {({ isSubmitting }) => (
                     <Form className="form">
-                        <div className="form-field">
-                            <label htmlFor="name">Name</label>
+                        <div className={classes.formField}>
+                            <label htmlFor="name" className={classes.labelFields}>Name</label>
                             <Field
                                 type="text"
                                 name="name"
                                 id="name"
-                                className="input"
+                                className={classes.input}
                             />
-                            <ErrorMessage name="name" component="div" className="error"/>
+                            <ErrorMessage name="name" component="div" className={classes.error}/>
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="password">Password</label>
+                        <div className={classes.formField}>
+                            <label htmlFor="password" className={classes.labelFields}>Password</label>
                             <Field
                                 type="password"
                                 name="password"
                                 id="password"
-                                className="input"
+                                className={classes.input}
                             />
-                            <ErrorMessage name="password" component="div" className="error"/>
+                            <ErrorMessage name="password" component="div" className={classes.error}/>
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="confirmPassword">Confirm Password</label>
+                        <div className={classes.formField}>
+                            <label htmlFor="confirmPassword" className={classes.labelFields}>Confirm Password</label>
                             <Field
                                 type="password"
                                 name="confirmPassword"
                                 id="confirmPassword"
-                                className="input"
+                                className={classes.input}
                             />
-                            <ErrorMessage name="confirmPassword" component="div" className="error"/>
+                            <ErrorMessage name="confirmPassword" component="div" className={classes.error}/>
                         </div>
 
                         {isSubmitting && <p>Submitting...</p>}
 
-                        <div className="form-field">
-                            <button type="submit" disabled={isSubmitting} className="submit-btn">
+                        <div className={classes.formField}>
+                            <button type="submit" disabled={isSubmitting} className={classes.submitBtn}>
                                 {isSubmitting ? "Submitting..." : "Create Account"}
                             </button>
                         </div>
 
-                        <div className="form-field">
+                        <div className={classes.formField}>
                             <button
                                 type="button"
                                 onClick={() => router.back()}
-                                className="back-btn"
+                                className={classes.backBtn}
                             >
                                 Go Back
                             </button>

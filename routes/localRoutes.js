@@ -36,7 +36,7 @@ router.post('/:id/opinion', async (req, res) => {
 router.get('/', getLocals);
 
 // Get a single Local by ID
-router.get('/:id',authenticateToken, getLocalById);
+router.get('/:id', getLocalById);
 
 // Update a Local by ID
 router.put('/:id', localValidator, async (req, res) => {

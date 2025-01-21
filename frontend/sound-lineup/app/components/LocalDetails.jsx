@@ -7,7 +7,7 @@ import {getLocalById} from "@/app/services/localService";
 import ClipLoader from "react-spinners/ClipLoader";
 import Image from "next/image";
 
-const ArtistDetails = ({id}) => {
+const LocalDetails = ({id}) => {
 
     const [local, setLocal] = useState(null)
     const [error, setError] = useState(null)
@@ -26,6 +26,7 @@ const ArtistDetails = ({id}) => {
                 setLoading(false)
             }
         }
+        fetchLocal()
     },[id])
 
     if (loading) {
@@ -38,8 +39,8 @@ const ArtistDetails = ({id}) => {
     if(!local){
         return <p>Local data not available.</p>
     }
-
-    const averageRating = local.ratings.length > 0
+    const hasRatings = Array.isArray(local.ratings) && local.ratings.length > 0;
+    const averageRating = hasRatings
         ? (local.ratings.reduce((sum, rating) => sum + rating.rating, 0) / local.ratings.length).toFixed(1)
         : "No ratings yet";
 
@@ -64,7 +65,8 @@ const ArtistDetails = ({id}) => {
             </ul>
 
             <h2>Address</h2>
-            TODO
+            <span>{local.country},</span><span>{local.address}</span>
         </div>
     )
 }
+export default LocalDetails;

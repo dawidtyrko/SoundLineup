@@ -13,6 +13,8 @@ export default function LocalsPage(){
     const [locals, setLocals] = useState([])
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null)
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredLocals, setFilteredLocals] = useState([]);
     const router = useRouter();
 
     useEffect(() => {
@@ -34,7 +36,14 @@ export default function LocalsPage(){
         }
         fetchLocals()
     },[])
-    console.log(locals)
+
+    useEffect(() => {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const filtered = locals.filter(local =>
+            local.name.toLowerCase().includes(lowerCaseQuery)
+        );
+        setFilteredLocals(filtered);
+    },[searchQuery,locals])
 
     if (loading) {
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
@@ -43,6 +52,14 @@ export default function LocalsPage(){
         return <p className="error">Error: {error.message}</p>;
     }
     return (
-        <LocalList locals={locals}/>
+        <div className="container">
+            <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"/>
+            <LocalList locals={filteredLocals}/>
+        </div>
     )
 }

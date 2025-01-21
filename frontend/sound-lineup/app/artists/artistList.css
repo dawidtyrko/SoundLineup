@@ -1,0 +1,33 @@
+/* Container Styling */
+.container {
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 800px;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Input Styling */
+.search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+    color: #333333;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0070f3;
+}
+
+/* Error Message Styling */
+.error {
+    color: #d32f2f;
+    font-size: 14px;
+    margin-top: 10px;
+}

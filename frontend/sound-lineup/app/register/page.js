@@ -3,7 +3,7 @@
 import { useState } from "react";
 import CreateArtist from "@/app/components/CreateArtist";
 import CreateGroup from "@/app/components/CreateGroup";
-
+import './register.css'
 export default function RegisterPage() {
     const [userType, setUserType] = useState('');
 

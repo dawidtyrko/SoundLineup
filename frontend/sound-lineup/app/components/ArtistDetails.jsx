@@ -46,8 +46,8 @@ const ArtistDetails = ({id}) => {
     //     console.log(artist.groupId);
     // }
     //console.log(artist.profileImage);
-
-    const averageRating = artist.ratings.length > 0
+    const hasRatings = Array.isArray(artist.ratings) && artist.ratings.length > 0;
+    const averageRating = hasRatings
         ? (artist.ratings.reduce((sum, rating) => sum + rating.rating, 0) / artist.ratings.length).toFixed(1)
         : "No ratings yet";
 

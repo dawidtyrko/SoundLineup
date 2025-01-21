@@ -9,7 +9,7 @@ export async function getLocals(){
 
 
 export async function getLocalById(id){
-    const response = await fetch(`API_BASE_URL/${id}`)
+    const response = await fetch(`${API_BASE_URL}/${id}`)
     return handleResponse(response);
 }
 
