@@ -4,13 +4,18 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {Types} = require("mongoose");
+const {validationResult} = require("express-validator");
 require('dotenv').config();
 
 const createArtist = async (req, res) => {
     const { name, age, password } = req.body;
 
     try {
-        // Create the artist
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         const artist = new Artist({
             name,
             age,
@@ -28,21 +33,33 @@ const createArtist = async (req, res) => {
 
 
 const changePassword = async (req, res) => {
-    const {currentPassword, newPassword} = req.body;
+    const {password, newPassword} = req.body;
     const artistId = req.params.id;
 
     try{
+        if (!Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        if (!password || !newPassword) {
+            return res.status(400).json({ message: "Both currentPassword and newPassword are required" });
+        }
+
         const artist = await Artist.findById(artistId);
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
 
-        const isPasswordValid = await bcrypt.compare(currentPassword, artist.password);
+
+        const isPasswordValid = await bcrypt.compare(password, artist.password);
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
-
-        artist.password = await bcrypt.hash(newPassword, 10);
+        artist.password = newPassword;
         await artist.save();
         res.status(200).json({ message: "Artist updated", artist: artist });
     }catch(err) {
@@ -89,7 +106,11 @@ const getArtists = async (req, res) => {
 // Get a single Artist by ID
 const getArtistById = async (req, res) => {
     try {
-        const artist = await Artist.findById(req.params.id)
+        const {id} = req.params;
+        if (!Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+        const artist = await Artist.findById(id)
             .populate('groupId', 'name')
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
@@ -141,6 +162,9 @@ const addOpinion = async (req,res) => {
         if (!opinion || !localName || !localId) {
             return res.status(400).json({ message: "Opinion, localId and localName are required" });
         }
+        if (!Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
         // Find the artist first to check for existing opinions
         const artist = await Artist.findById(artistId);
         if (!artist) {
@@ -169,15 +193,18 @@ const addOpinion = async (req,res) => {
 
 const addRating = async (req, res) => {
     try {
-        const { rating, localId } = req.body;  // Extract rating and localId from request body
-        const artistId = req.params.id; // Artist ID from the route parameter
+        const { rating, localId } = req.body;
+        const artistId = req.params.id;
 
-        // Validate required fields
+
         if (!rating || !localId) {
             return res.status(400).json({ message: "Rating and localId are required" });
         }
+        if (!Types.ObjectId.isValid(localId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
 
-        // Ensure the rating is within the valid range
+
         if (rating < 1 || rating > 10) {
             return res.status(400).json({ message: "Rating must be between 1 and 10" });
         }

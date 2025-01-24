@@ -7,6 +7,8 @@ const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const {loginArtist} = require("./artistController");
+const {Types} = require("mongoose");
+const {validationResult} = require("express-validator");
 require("dotenv").config();
 
 // Create a new Group
@@ -36,7 +38,10 @@ const addMemberToGroup = async (req, res) => {
     const { groupId, artistName } = req.body;
 
     try {
-        // Find the group by ID
+        if (!Types.ObjectId.isValid(groupId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+
         const group = await Group.findById(groupId)
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
@@ -74,6 +79,15 @@ const changePassword = async (req, res) => {
     const groupId = req.params.id;
 
     try{
+        if (!Types.ObjectId.isValid(groupId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
         const group = await Group.findById(groupId);
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
@@ -83,8 +97,8 @@ const changePassword = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        group.password = newPassword
 
-        group.password = await bcrypt.hash(newPassword, 10);
         await group.save();
         res.status(200).json({ message: "Group updated", group: group });
     }catch(err) {
@@ -149,7 +163,8 @@ const updateGroup = async (req, res) => {
     const { members } = req.body;
     try {
 
-        const group = await Group.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const group = await Group.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+            .populate('members', 'name age');
         if (!group) {
             return res.status(404).json({ message: "Group not found" });
         }
@@ -283,7 +298,7 @@ const uploadProfileImage = async (groupId, file) => {
             groupId,
             { profileImage: filePath }, // Save file path in the artist document
             { new: true }
-        );
+        ).populate('members', 'name age');
 
         if (!updatedGroup) {
             console.error('Group not found');
@@ -398,5 +413,6 @@ module.exports = {
     addRating,
     addAudioLink,
     deleteAudioLink,
-    addMemberToGroup
+    addMemberToGroup,
+    changePassword
 };

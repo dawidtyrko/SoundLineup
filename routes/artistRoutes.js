@@ -9,7 +9,7 @@ const validateRequest = require('../middleware/validateRequest');
 const authenticateToken = require('../middleware/authenticateToken');
 
 router.post('/login',loginArtist)
-// Create an Artist
+
 router.post('/', artistValidator,passwordValidation,validateRequest, createArtist);
 
 router.post('/:id/rating',authenticateToken,addRating)
@@ -18,7 +18,7 @@ router.post('/:id/opinion',authenticateToken,addOpinion)
 // Route to add an audio link to an artist
 router.post('/:id/add-audio-link',authenticateToken, async (req, res) => {
     const { platform, url } = req.body;
-    const artistId = req.params.id;  // Get artist ID from route params
+    const artistId = req.params.id;
 
     if (!platform || !url) {
         return res.status(400).json({ message: "Platform and URL are required" });
@@ -47,10 +47,10 @@ router.post('/upload/:id',authenticateToken, upload.single('profileImage'), asyn
 
 
 
-router.get('/', getArtists);
+router.get('/',authenticateToken, getArtists);
 
 
-router.get('/:id', getArtistById);
+router.get('/:id',authenticateToken, getArtistById);
 
 // Update an Artist by ID
 router.put('/:id',authenticateToken, artistValidator, async (req, res) => {
@@ -62,13 +62,13 @@ router.put('/:id',authenticateToken, artistValidator, async (req, res) => {
 });
 router.put('/:id/change-password',authenticateToken,passwordValidation, changePassword);
 
-// Delete an Artist by ID
+
 router.delete('/:id',authenticateToken, deleteArtist);
 router.delete('/:id/profile-image',authenticateToken, deleteProfileImage);
 // Route to delete an audio link for a specific platform
 router.delete('/:id/delete-audio-link',authenticateToken, async (req, res) => {
     const { platform } = req.body;
-    const artistId = req.params.id;  // Get artist ID from route params
+    const artistId = req.params.id;
 
     if (!platform) {
         return res.status(400).json({ message: "Platform is required" });

@@ -1,7 +1,7 @@
 const API_BASE_URL = 'http://localhost:3001/api/artists';
 const LOGIN_BASE_URL = 'http://localhost:3001/api';
 
-//general function to log in the user (artist/group/local)
+
 export async function loginArtist(name, password, userType){
     const response = await fetch(`${LOGIN_BASE_URL}/${userType}/login`, {
         method: 'POST',

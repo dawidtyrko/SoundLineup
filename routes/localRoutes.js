@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const { createLocal, getLocals, getLocalById, updateLocal, deleteLocal,addLocalOpinion,loginLocal } = require('../controllers/localController');
+const { createLocal, getLocals, getLocalById, updateLocal, deleteLocal,addLocalOpinion,loginLocal, changePassword} = require('../controllers/localController');
 const { localValidator } = require('../middleware/localValidator'); // Assuming you have a validator
 const {passwordValidation} = require("../middleware/passwordValidator");
 const validateRequest = require('../middleware/validateRequest');
@@ -46,6 +46,7 @@ router.put('/:id', localValidator, async (req, res) => {
     }
     await updateLocal(req, res);
 });
+router.put('/:id',authenticateToken,passwordValidation,changePassword)
 
 // Delete a Local by ID
 router.delete('/:id', deleteLocal);
