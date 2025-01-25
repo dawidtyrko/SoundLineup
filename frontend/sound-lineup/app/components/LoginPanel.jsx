@@ -21,14 +21,18 @@ const LoginPanel = () => {
 
         try {
             const data = await loginArtist(name, password, userType);
-
             if (data && data.token) {
                 login(data.user, data.token, userType);
                 router.push(`/`);
             }
 
         } catch (err) {
-            setError(err.message);
+            if (err.response && err.response.data && err.response.data.message) {
+                setError(err.response.data.message); // Extract message from the server response
+            } else {
+                setError("Something went wrong. Please try again."); // Fallback error message
+            }
+            //setError(err.message || "Wrong credentials.");
         } finally {
             setLoading(false);
         }

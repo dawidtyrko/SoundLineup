@@ -139,3 +139,86 @@
 .logoutButton:hover {
     background-color: #d10000;
 }
+
+.uploadContainer {
+    display: flex; /* Flexbox layout */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 16px; /* Add spacing between items */
+    justify-content: center; /* Center the items horizontally */
+    margin-top: 20px; /* Add spacing above the container */
+}
+
+.uploadItem {
+    flex: 1; /* Allow items to take up equal space */
+    min-width: 300px; /* Set a minimum width for each item */
+    max-width: 500px; /* Set a maximum width for each item */
+    text-align: center; /* Center content inside */
+    padding: 15px; /* Add padding for better spacing */
+    background-color: #f9f9f9; /* Light background for contrast */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+.deleteButton {
+    background-color: #ff4d4d; /* Red button to indicate deletion */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 5px 8px;
+    margin-left: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+}
+.profileImageContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.deleteProfileImageButton {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteProfileImageButton:hover {
+    background-color: #ff1a1a;
+}
+
+.deleteAccountSection {
+    margin-top: 30px;  /* Add some space before the delete button */
+    display: flex;
+    justify-content: center;
+}
+
+.deleteAccountButton {
+    background-color: #ff4d4d;  /* Red background */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.deleteAccountButton:hover {
+    background-color: #e60000;  /* Darker red on hover */
+}
+
+.deleteAccountButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

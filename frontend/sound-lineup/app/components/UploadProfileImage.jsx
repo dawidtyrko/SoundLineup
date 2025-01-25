@@ -4,7 +4,7 @@ import { uploadProfileImage } from '@/app/services/artistService';
 import { useAuth } from "@/app/AuthContext";
 import styles from './UploadProfileImage.module.css';  // Import the new CSS module
 
-const UploadProfileImage = ({ artistId }) => {
+const UploadProfileImage = ({ artistId, onProfileImageUpdate }) => {
     const { token, login, userType } = useAuth();
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
@@ -26,6 +26,7 @@ const UploadProfileImage = ({ artistId }) => {
             const result = await uploadProfileImage(artistId, file, token);
             setMessage(result.message);
             login(result.user, token, userType);
+            //onProfileImageUpdate(result.user);
         } catch (error) {
             setMessage(error.message || 'Error uploading profile image.');
         } finally {

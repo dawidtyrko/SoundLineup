@@ -26,7 +26,7 @@ router.post('/:id/add-audio-link',authenticateToken, async (req, res) => {
 
     try {
         const result = await addAudioLink(artistId, platform, url);
-        res.status(result.status).json({ message: result.message, artist: result.artist });
+        res.status(result.status).json({ message: result.message, user: result.artist });
     } catch (err) {
         console.error('Error adding audio link:', err);
         res.status(500).json({ message: "Internal server error" });
@@ -76,7 +76,7 @@ router.delete('/:id/delete-audio-link',authenticateToken, async (req, res) => {
 
     try {
         const result = await deleteAudioLink(artistId, platform);
-        res.status(result.status).json({ message: result.message, artist: result.artist });
+        res.status(result.status).json({ message: result.message, user: result.artist });
     } catch (err) {
         console.error('Error deleting audio link:', err);
         res.status(500).json({ message: "Internal server error" });

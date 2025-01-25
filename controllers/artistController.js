@@ -243,16 +243,20 @@ const deleteProfileImage = async (req, res) => {
     const artistId = req.params.id;
 
     try {
+        if (!Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+
         const artist = await Artist.findById(artistId);
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
 
-        // Check if the artist has a profile image
         if (artist.profileImage) {
             const imagePath = path.join(__dirname, '../', artist.profileImage);
 
-            fs.unlink(imagePath, (err) => {
+            // Delete the image file
+            fs.unlink(imagePath, async (err) => {
                 if (err) {
                     console.error('Error deleting image:', err);
                     return res.status(500).json({ message: "Error deleting image from server" });
@@ -260,9 +264,13 @@ const deleteProfileImage = async (req, res) => {
 
                 // Clear the profileImage field in the artist document
                 artist.profileImage = undefined;
-                artist.save();
+                const updatedArtist = await artist.save();
 
-                return res.status(200).json({ message: "Profile image deleted successfully" });
+                // Respond with updated artist data
+                return res.status(200).json({
+                    message: "Profile image deleted successfully",
+                    user: updatedArtist,
+                });
             });
         } else {
             return res.status(404).json({ message: "No profile image to delete" });
@@ -274,17 +282,22 @@ const deleteProfileImage = async (req, res) => {
 };
 
 
+
 // Delete an Artist by ID
 const deleteArtist = async (req, res) => {
+    const artistId = req.params.id;
     try {
-        const artist = await Artist.findByIdAndDelete(req.params.id);
+        if (!Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+        const artist = await Artist.findByIdAndDelete(artistId);
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
-        // Delete the profile image if exists
-        await deleteProfileImage(artist);
 
-        // If artist was part of a group, remove them from the group's members
+        await deleteProfileImage(req, res);
+
+
         if (artist.groupId) {
             await Group.findByIdAndUpdate(artist.groupId, { $pull: { members: artist._id } });
         }
@@ -299,6 +312,9 @@ const deleteArtist = async (req, res) => {
 // Add an Audio Link to the Artist's audioLinks
 const addAudioLink = async (artistId, platform, url) => {
     try {
+        if (!Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
         const artist = await Artist.findById(artistId);
         if (!artist) {
             console.error('Artist not found');
@@ -344,8 +360,7 @@ const deleteAudioLink = async (artistId, platform) => {
         artist.audioLinks = artist.audioLinks.filter(link => link.platform !== platform);
         const updatedArtist = await artist.save();
 
-        console.log('Updated Artist:', updatedArtist);
-        return { message: `Audio link from ${platform} removed successfully`, status: 200, artist: updatedArtist };
+        return { message: `Audio link from ${platform} removed successfully`, status: 200, user: updatedArtist };
     } catch (err) {
         console.error('Error deleting audio link:', err);
         return { message: 'Internal server error', status: 500 };

@@ -1,0 +1,80 @@
+.uploadWrapper {
+    background-color: #181818;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    margin-top: 20px;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.uploadHeader {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.uploadForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input {
+    background-color: #121212;
+    border: 1px solid #ccc;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #1db954;
+}
+
+.submitButton {
+    background-color: #1db954;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #1ed760;
+}
+
+.submitButton:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.successMessage {
+    color: #1db954;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.errorMessage {
+    color: #e60000;
+    margin-top: 10px;
+    text-align: center;
+}

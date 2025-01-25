@@ -1,3 +1,5 @@
+import {token} from "morgan";
+
 const API_BASE_URL = 'http://localhost:3001/api/artists';
 const LOGIN_BASE_URL = 'http://localhost:3001/api';
 
@@ -61,6 +63,19 @@ export async function uploadProfileImage(artistId, file, token) {
     return handleResponse(response);
 }
 
+export async function addAudio(artistId,platform, link,token) {
+    const response = await fetch(`${API_BASE_URL}/${artistId}/add-audio-link`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`},
+        body: JSON.stringify({
+            "platform": platform,
+            "url": link
+        })
+    })
+    return handleResponse(response);
+}
+
 export async function addOpinion(artistId, opinionData) {
     const response = await fetch(`${API_BASE_URL}/${artistId}/opinion`, {
         method: 'POST',
@@ -79,6 +94,34 @@ export async function getArtistById(id,token) {
     return handleResponse(response);
 }
 
+export async function deleteAudioLink(artistId,token,platform){
+    const response = await fetch(`${API_BASE_URL}/${artistId}/delete-audio-link`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`},
+        body: JSON.stringify({
+            "platform": platform
+        })
+    })
+    return handleResponse(response);
+}
+
+export async function deleteProfileImage(artistId,token){
+    const response = await fetch(`${API_BASE_URL}/${artistId}/profile-image`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`}
+    })
+    return handleResponse(response);
+}
+export async function deleteProfile(artistId,token){
+    const response = await fetch(`${API_BASE_URL}/${artistId}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`}
+    })
+    return handleResponse(response);
+}
 export async function handleResponse(response){
     if (!response.ok) {
         throw new Error(`${response.status} ${response.message}`);
