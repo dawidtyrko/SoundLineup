@@ -146,7 +146,7 @@ const updateArtist = async (req, res) => {
             return res.status(404).json({ message: "Artist not found" });
         }
 
-        res.status(200).json({ message: "Artist updated", artist });
+        res.status(200).json({ message: "Artist updated", user:artist });
     } catch (err) {
         console.error("Error updating artist:", err);
         res.status(400).json({ message: err.message });
@@ -368,6 +368,7 @@ const uploadProfileImage = async (artistId, file) => {
             { profileImage: filePath }, // Save file path in the artist document
             { new: true }
         );
+
 
         if (!updatedArtist) {
             console.error('Artist not found');

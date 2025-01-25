@@ -19,7 +19,7 @@ export default function Page() {
     if (userType === 'artists'){
         return (
             <>
-                <ArtistProfile/>
+                <ArtistProfile user={user}/>
             </>
         )
     }
@@ -27,7 +27,7 @@ export default function Page() {
     if (userType === 'groups'){
         return (
             <>
-                <GroupProfile/>
+                <GroupProfile user={user}/>
             </>
         )
     }

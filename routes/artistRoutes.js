@@ -39,7 +39,7 @@ router.post('/upload/:id',authenticateToken, upload.single('profileImage'), asyn
 
     try {
         const result = await uploadProfileImage(artistId, req.file);
-        res.status(result.status).json({ message: result.message, artist: result.artist });
+        res.status(result.status).json({ message: result.message, user: result.user });
     } catch (err) {
         res.status(500).json({ message: "Internal server error" });
     }

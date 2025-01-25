@@ -1,14 +1,14 @@
-'use client'
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { uploadProfileImage } from '@/app/services/artistService';
-import {useAuth} from "@/app/AuthContext";  // Import the function
+import { useAuth } from "@/app/AuthContext";
+import styles from './UploadProfileImage.module.css';  // Import the new CSS module
 
 const UploadProfileImage = ({ artistId }) => {
     const { token, login, userType } = useAuth();
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
-    const router = useRouter();
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -21,25 +21,37 @@ const UploadProfileImage = ({ artistId }) => {
             return;
         }
 
-        //const token = localStorage.getItem('token'); // Get the token from localStorage
-
+        setIsUploading(true);
         try {
             const result = await uploadProfileImage(artistId, file, token);
             setMessage(result.message);
-            login(result.user,token,userType);
+            login(result.user, token, userType);
         } catch (error) {
             setMessage(error.message || 'Error uploading profile image.');
+        } finally {
+            setIsUploading(false);
         }
     };
 
     return (
-        <div>
-            <h2>Upload Profile Image</h2>
-            <form onSubmit={handleSubmit}>
-                <input type="file" onChange={handleFileChange} accept="image/*" />
-                <button type="submit">Upload</button>
+        <div className={styles.uploadWrapper}>
+            <h2 className={styles.uploadHeader}>Upload Profile Image</h2>
+            <form onSubmit={handleSubmit} className={styles.uploadForm}>
+                <input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className={styles.fileInput}
+                />
+                <button type="submit" className={styles.uploadButton} disabled={isUploading}>
+                    {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
             </form>
-            {message && <p>{message}</p>}
+            {message && (
+                <p className={message.includes('Error') ? styles.uploadMessageError : styles.uploadMessageSuccess}>
+                    {message}
+                </p>
+            )}
         </div>
     );
 };

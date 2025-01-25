@@ -1,11 +1,11 @@
 'use client'
 
-import {useState} from "react";
 import {useRouter} from "next/navigation";
 import {updateArtistById} from "@/app/services/artistService";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import {useAuth} from "@/app/AuthContext";
+import classes from "./CreateArtist.module.css";
 
 
 const EditArtist = ({ artist,onUpdate }) => {
@@ -39,45 +39,56 @@ const EditArtist = ({ artist,onUpdate }) => {
     };
 
     return (
-        <Formik
-            initialValues={{
-                name: artist.name,
-                age: artist.age,
-                groupName: artist.groupId || '',
-            }}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-        >
-            {({ isSubmitting, errors }) => (
-                <Form>
-                    <h2>Edit Artist</h2>
-                    {errors.general && <p>Error: {errors.general}</p>}
+        <div className={classes.formContainer}>
+            <h1 className={classes.headerOne} style={{color: "black"}}>Edit Artist</h1>
+            <Formik
+                initialValues={{
+                    name: artist.name,
+                    age: artist.age,
+                    groupName: artist.groupId || '',
+                }}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+                {({isSubmitting, errors}) => (
+                    <Form>
 
-                    <label>
-                        Name:
-                        <Field type="text" name="name" />
-                        <ErrorMessage name="name" component="div" className="error" />
-                    </label>
+                        {errors.general && <p className={classes.error}>Error: {errors.general}</p>}
 
-                    <label>
-                        Age:
-                        <Field type="number" name="age" />
-                        <ErrorMessage name="age" component="div" className="error" />
-                    </label>
+                        <div className={classes.formField}>
+                            <label className={classes.labelFields}>
+                                Name:
+                                <Field type="text" name="name"/>
+                                <ErrorMessage name="name" component="div" className="error"/>
+                            </label>
+                        </div>
 
-                    <label>
-                        Group Name:
-                        <Field type="text" name="groupName" />
-                        <ErrorMessage name="groupName" component="div" className="error" />
-                    </label>
+                        <div className={classes.formField}>
+                            <label className={classes.labelFields}>
+                                Age:
+                                <Field type="number" name="age"/>
+                                <ErrorMessage name="age" component="div" className="error"/>
+                            </label>
+                        </div>
 
-                    <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Saving...' : 'Save Changes'}
-                    </button>
-                </Form>
-            )}
-        </Formik>
-    );
-}
+                        <div className={classes.formField}>
+                            <label className={classes.labelFields}>
+                                Group Name:
+                                <Field type="text" name="groupName"/>
+                                <ErrorMessage name="groupName" component="div" className="error"/>
+                            </label>
+                        </div>
 
-export default EditArtist;
+                        <div className={classes.formField}>
+                            <button type="submit" disabled={isSubmitting} className={classes.submitBtn}>
+                                {isSubmitting ? 'Saving...' : 'Save Changes'}
+                            </button>
+                        </div>
+                    </Form>
+                    )}
+            </Formik>
+        </div>
+            );
+            }
+
+            export default EditArtist;

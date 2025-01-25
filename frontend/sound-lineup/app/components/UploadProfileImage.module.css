@@ -1,0 +1,72 @@
+.uploadWrapper {
+    background-color: #181818;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.uploadHeader {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.uploadForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fileInput {
+    background-color: #121212;
+    border: 1px solid #1db954;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    width: 250px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.fileInput:focus {
+    outline: none;
+    border-color: #1ed760;
+}
+
+.uploadButton {
+    background-color: #1db954;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.uploadButton:hover {
+    background-color: #1ed760;
+}
+
+.uploadButton:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.uploadMessage {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #1db954;
+}
+
+.uploadMessageError {
+    color: #e60000;
+}
+
+.uploadMessageSuccess {
+    color: #1db954;
+}

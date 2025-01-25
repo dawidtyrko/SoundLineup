@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (!response.ok) {
-            throw new Error('Token is invalid or expired');
+            logout()
         }
 
         const data = await response.json();
@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (err) {
             console.error("Error during session restoration:", err.message);
+            logout()
         }
     }, [validateToken]);
 
