@@ -1,21 +1,25 @@
 'use client'
 import Image from "next/image";
 import {useRouter} from "next/navigation";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {useAuth} from "@/app/AuthContext";
+import ClipLoader from "react-spinners/ClipLoader";
 
 export default function Home() {
-  const {user, token,validateToken} = useAuth();
+  const {user, token, restoreSession} = useAuth();
+  const [isSessionRestored, setIsSessionRestored] = useState(false)
   const router = useRouter();
 
-  useEffect(() => {
-
-      if (!token || !user) {
-        router.replace("/login");
-      }else{
-        validateToken()
-      }
-  },[token, user])
+    useEffect(() => {
+        const restore = async () => {
+            await restoreSession()
+            setIsSessionRestored(true)
+        }
+        restore()
+    },[restoreSession])
+    if(!user || !isSessionRestored){
+        return <ClipLoader color={"#123abc"} loading={isSessionRestored} size={50} />;
+    }
 
   return (
       <>

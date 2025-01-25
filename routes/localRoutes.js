@@ -33,10 +33,10 @@ router.post('/:id/opinion', async (req, res) => {
 });
 
 // Get all Locals
-router.get('/', getLocals);
+router.get('/',authenticateToken, getLocals);
 
 // Get a single Local by ID
-router.get('/:id', getLocalById);
+router.get('/:id',authenticateToken, getLocalById);
 
 // Update a Local by ID
 router.put('/:id', localValidator, async (req, res) => {

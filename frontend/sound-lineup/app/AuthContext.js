@@ -1,87 +1,91 @@
 'use client';
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, {createContext, useState, useContext, useEffect, useCallback} from 'react';
 import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    //const [role, setRole] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [token, setToken] = useState(null);
     const [userType, setUserType] = useState('artists');
     const router = useRouter();
 
-
-    // Load user info from localStorage on initial load
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('token');
-        const storedUserType = localStorage.getItem('userType');
-        //const storedRole = localStorage.getItem('role');
-
-        if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
-            setUserType(storedUserType);
-            //setRole(storedRole);
-        }
-    }, []);
-
-    const validateToken = async () => {
+    const validateToken = useCallback(async () => {
         if (!token) {
-            logout();  // If no token, logout immediately
-            return;
+            console.log("No token found, skipping token validation.")
+            return
         }
 
+        const response = await fetch('http://localhost:3001/check-token', {
+            headers: { authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+            throw new Error('Token is invalid or expired');
+        }
+
+        const data = await response.json();
+        console.log('Token validation successful:', data.message);
+    }, [token]);
+
+
+
+    const restoreSession = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:3001/check-token', {
-                headers: { authorization: `Bearer ${token}` },
-            });
+            const storedUser = localStorage.getItem("user");
+            const storedToken = localStorage.getItem("token");
+            const storedUserType = localStorage.getItem("userType");
 
-            if (!response.ok) {
-                throw new Error('Token is invalid or expired');
+            if (storedUser && storedToken && storedUserType) {
+                console.log("Restoring session...");
+                setUser(JSON.parse(storedUser));
+                setToken(storedToken);
+                setUserType(storedUserType);
+
+                if(storedToken){
+                    await validateToken();
+                }
+                console.log("Session restored successfully");
+            } else {
+                console.log("Session data missing in localStorage. Logging out.");
+                logout()
             }
-
-            const data = await response.json();
-            console.log(data.message); // Token is valid
         } catch (err) {
-            console.error(err.message);
-            logout(); // Logout if token is invalid or expired
+            console.error("Error during session restoration:", err.message);
         }
-    };
-    // useEffect(() => {
-    //     if (token) {
-    //         validateToken();
-    //     }
-    // },[token])
+    }, [validateToken]);
+
+
 
     const login = (userData, tokenData, userTypeData) => {
         setUser(userData);
         setToken(tokenData);
         setUserType(userTypeData);
-        //setRole(roleData);
+
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', tokenData);
         localStorage.setItem('userType', userTypeData);
     };
 
     const logout = () => {
+        console.log("Logging out: Clearing localStorage");
         setUser(null);
         setToken(null);
         setUserType(null);
-        //setRole(null);
 
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('userType');
-        //localStorage.removeItem('role');
-
         router.push('/login');
     };
 
+    useEffect(() => {
+        restoreSession()
+    }, [restoreSession]);
     return (
-        <AuthContext.Provider value={{ user, token,userType, login, logout,validateToken }}>
+        <AuthContext.Provider value={{ user, token,userType, login, logout,validateToken,loading,restoreSession }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,20 +1,21 @@
 'use client'
 import {useAuth} from "@/app/AuthContext";
 import ArtistProfile from "@/app/components/ArtistProfile";
-import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
+import {useEffect} from "react";
+
 import GroupProfile from "@/app/components/GroupProfile";
 
 export default function Page() {
-    const {user} = useAuth();
-    const router = useRouter();
-    const [userType, setUserType] = useState(localStorage.getItem("userType"));
-    console.log("profile page", user)
-    // useEffect(() => {
-    //     if (!user){
-    //         router.push('/login')
-    //     }
-    // },[user,router])
+    const {user,userType, restoreSession} = useAuth();
+
+    useEffect(() => {
+        restoreSession();
+    },[restoreSession])
+
+    if(!user){
+        return <p>Loading...</p>
+    }
+
     if (userType === 'artists'){
         return (
             <>

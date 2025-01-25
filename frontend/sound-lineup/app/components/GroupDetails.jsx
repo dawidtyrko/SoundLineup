@@ -8,28 +8,19 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Link from "next/link";
 import Image from "next/image";
 
-const GroupDetails = ({id}) => {
+const GroupDetails = ({id,token}) => {
     const [group, setGroup] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-    const router = useRouter()
-    const {token, user} = useAuth()
+
+
 
     useEffect(() => {
-        if (!user){
-            router.push('/login')
-        }
-    },[user,router])
-
-    useEffect(() => {
-        if (!id) return
+        if (!id || !token) return
         async function fetchGroups() {
             try{
                 const data = await getGroup(id,token)
-                console.log(data)
                 setGroup(data.group)
-                console.log(data.group)
-                console.log(group)
             }catch(err){
                 setError(err)
             }finally {

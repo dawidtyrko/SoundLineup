@@ -36,7 +36,7 @@ router.post('/:id/opinion', authenticateToken,async (req, res) => {
     }
 });
 // Get all Groups
-router.get('/', getGroups);
+router.get('/',authenticateToken, getGroups);
 
 // Get a single Group by ID
 router.get('/:id',authenticateToken, getGroupById);

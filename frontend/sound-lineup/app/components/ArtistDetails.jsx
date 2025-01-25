@@ -2,24 +2,21 @@
 import {useEffect, useState} from "react";
 import {getArtistById} from "@/app/services/artistService";
 import ClipLoader from 'react-spinners/ClipLoader'
-import {useRouter} from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import {useAuth} from "@/app/AuthContext";
 
 
-const ArtistDetails = ({id}) => {
-
+const ArtistDetails = ({id,token}) => {
     const [artist, setArtist] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
+
 
     useEffect(() => {
-        if(!id) return
+        if(!id || !token) return
         async function fetchArtists () {
             try{
-                const data = await getArtistById(id);
+                const data = await getArtistById(id,token);
                 setArtist(data.artist)
             }catch(err){
                 setError(err)
@@ -41,11 +38,7 @@ const ArtistDetails = ({id}) => {
     if(!artist) {
         return <p>Artist data not available.</p>
     }
-    // if(artist.groupId != null){
-    //     console.log(artist.groupId._id);
-    //     console.log(artist.groupId);
-    // }
-    //console.log(artist.profileImage);
+
     const hasRatings = Array.isArray(artist.ratings) && artist.ratings.length > 0;
     const averageRating = hasRatings
         ? (artist.ratings.reduce((sum, rating) => sum + rating.rating, 0) / artist.ratings.length).toFixed(1)

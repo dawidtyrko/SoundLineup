@@ -1,32 +1,36 @@
 'use client'
 
-
 import {useAuth} from "@/app/AuthContext";
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 import {getLocals} from "@/app/services/localService";
 import ClipLoader from "react-spinners/ClipLoader";
 import LocalList from "@/app/components/LocalList";
 
 export default function LocalsPage(){
-    const {user, token}=useAuth()
+    const {user, token, restoreSession}=useAuth()
     const [locals, setLocals] = useState([])
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null)
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredLocals, setFilteredLocals] = useState([]);
-    const router = useRouter();
+    const [isSessionRestored, setIsSessionRestored] = useState(false)
+
 
     useEffect(() => {
-        if(user){
-            console.log(user)
+        const restore = async () => {
+            await restoreSession()
+            setIsSessionRestored(true)
         }
-    },[user])
+        restore()
+    },[restoreSession])
 
     useEffect(() => {
+        if(!isSessionRestored || !token){
+            return;
+        }
         async function fetchLocals(){
             try{
-                const data = await getLocals();
+                const data = await getLocals(token);
                 setLocals(data.locals)
                 setLoading(false)
             }catch(err){
@@ -35,7 +39,7 @@ export default function LocalsPage(){
             }
         }
         fetchLocals()
-    },[])
+    },[isSessionRestored,token])
 
     useEffect(() => {
         const lowerCaseQuery = searchQuery.toLowerCase();
@@ -45,7 +49,7 @@ export default function LocalsPage(){
         setFilteredLocals(filtered);
     },[searchQuery,locals])
 
-    if (loading) {
+    if(!user || !isSessionRestored || loading){
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
     }
     if (error) {

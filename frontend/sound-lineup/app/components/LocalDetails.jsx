@@ -1,27 +1,23 @@
 'use client'
-
-
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 import {getLocalById} from "@/app/services/localService";
 import ClipLoader from "react-spinners/ClipLoader";
 import Image from "next/image";
 
-const LocalDetails = ({id}) => {
-
+const LocalDetails = ({id,token}) => {
     const [local, setLocal] = useState(null)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
-    const router = useRouter()
+
 
     useEffect(() => {
-        if(!id) return
+        if(!id || !token) return
         async function fetchLocal(){
             try{
-                const data = await getLocalById(id)
+                const data = await getLocalById(id,token)
                 setLocal(data.local)
             }catch(err){
-
+                setError(err)
             }finally {
                 setLoading(false)
             }

@@ -3,30 +3,35 @@ import {getArtists} from '../services/artistService'
 import {useEffect, useState} from "react";
 import ArtistList from "@/app/components/ArtistList";
 import {useAuth} from "@/app/AuthContext";
-import {useRouter} from "next/navigation";
+
 import ClipLoader from "react-spinners/ClipLoader";
 import './artistList.css'
 export default function ArtistsPage () {
-    const {user,token} = useAuth()
+    const {user,token,restoreSession} = useAuth()
     const [artists, setArtists] = useState([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredArtists, setFilteredArtists] = useState([])
-    const [artist, setArtist] = useState(user)
-    const router = useRouter();
+    const [isSessionRestored, setIsSessionRestored] = useState(false)
 
     const [error, setError] = useState(null)
 
-    useEffect(() => {
-        if (user) {
-            setArtist(user)
-        }
-    },[user])
 
     useEffect(() => {
+        const restore = async () => {
+            await restoreSession()
+            setIsSessionRestored(true)
+        }
+        restore()
+    },[restoreSession])
+
+    useEffect(() => {
+        if(!isSessionRestored || !token){
+            return;
+        }
         async function fetchArtists () {
             try{
-                const data = await getArtists()
+                const data = await getArtists(token)
                 setArtists(data.artists)
                 setLoading(false)
             }catch(err){
@@ -35,7 +40,7 @@ export default function ArtistsPage () {
             }
         }
         fetchArtists()
-    },[])
+    },[isSessionRestored,token])
 
     useEffect(() => {
 
@@ -46,7 +51,7 @@ export default function ArtistsPage () {
         setFilteredArtists(filtered);
     }, [searchQuery, artists]);
 
-    if (loading) {
+    if(!user || !isSessionRestored || loading){
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
     }
     if (error) {

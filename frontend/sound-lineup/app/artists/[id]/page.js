@@ -1,18 +1,27 @@
 'use client'
 import ArtistDetails from "@/app/components/ArtistDetails";
-import {useParams, useRouter} from "next/navigation";
+import {useParams} from "next/navigation";
+import {useAuth} from "@/app/AuthContext";
+import {useEffect, useState} from "react";
 
-// export const metadata = {
-//         title: "Artist details",
-//         description: "Details of chosen artist"
-// }
 
-export default function ArtistPage({params}) {
-    const router = useRouter();
+export default function ArtistPage() {
+    const {restoreSession,token} = useAuth()
+    const [isSessionRestored, setIsSessionRestored] = useState(false)
     const {id} = useParams();
-    if (!id) return <p>Loading</p>;
-    //  console.log(id)
-    return (
-        <ArtistDetails id={id} />
-    )
+
+    useEffect(() => {
+        const restore = async () => {
+            await restoreSession()
+            setIsSessionRestored(true)
+        }
+        restore()
+    },[restoreSession])
+
+    if(isSessionRestored){
+        return (
+            <ArtistDetails id={id} token={token} />
+        )
+    }
+
 }

@@ -13,8 +13,12 @@ export async function loginArtist(name, password, userType){
     })
     return handleResponse(response)
 }
-export async function getArtists() {
-    const response = await fetch(API_BASE_URL);
+export async function getArtists(token) {
+    const response = await fetch(API_BASE_URL,{
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`}
+    });
     return handleResponse(response);
 }
 
@@ -23,7 +27,7 @@ export async function updateArtistById(artistId, updatedData, token) {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Assuming token-based auth
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(updatedData),
     });
@@ -49,7 +53,7 @@ export async function uploadProfileImage(artistId, file, token) {
     const response = await fetch(`${API_BASE_URL}/upload/${artistId}`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${token}`, // Include token for authentication
+            'Authorization': `Bearer ${token}`,
         },
         body: formData,
     });
@@ -66,14 +70,17 @@ export async function addOpinion(artistId, opinionData) {
     return handleResponse(response);
 }
 
-export async function getArtistById(id) {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
+export async function getArtistById(id,token) {
+    const response = await fetch(`${API_BASE_URL}/${id}`,{
+        method: 'GET',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`},
+    });
     return handleResponse(response);
 }
 
 export async function handleResponse(response){
     if (!response.ok) {
-        //const errorData = await response.json();
         throw new Error(`${response.status} ${response.message}`);
     }
     return response.json();
