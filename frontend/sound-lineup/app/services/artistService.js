@@ -124,7 +124,22 @@ export async function deleteProfile(artistId,token){
 }
 export async function handleResponse(response){
     if (!response.ok) {
-        throw new Error(`${response.status} ${response.message}`);
+        let errorMessage = `${response.status}: An unknown error occurred`;
+        try {
+            const errorText = await response.text();
+            //console.log("Raw error response body:", errorText);
+
+            const errorData = JSON.parse(errorText);
+            errorMessage = `${errorData.message || "An unknown error occurred"}`;
+        } catch (parseError) {
+            console.error("Error parsing JSON from response:", parseError);
+            // console.warn(
+            //     `Falling back to raw response: "${response.statusText}" (status: ${response.status})`
+            // );
+            errorMessage = `${response.status}: ${response.statusText || "Unable to parse error response"}`;
+        }
+
+        throw new Error(errorMessage);
     }
     return response.json();
 }

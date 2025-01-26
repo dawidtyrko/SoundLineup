@@ -5,7 +5,7 @@
 }
 
 .artistListLi {
-    background-color: rgba(116, 119, 136, 0.68);
+    background-color: rgb(24, 24, 24);
     margin: 10px 0;
     padding: 15px;
     border-radius: 8px;
@@ -55,6 +55,6 @@
     border-radius: 50%;
     margin-right: 15px;
     object-fit: cover;
-    border: 1px solid #ccc;
+    border: 1px solid #1db954;
 
 }

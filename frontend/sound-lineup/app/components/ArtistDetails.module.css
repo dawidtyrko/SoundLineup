@@ -1,0 +1,132 @@
+.profileWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #121212;
+    color: #fff;
+}
+
+.profileHeader {
+    width: 100%;
+    background-color: #1db954;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.profileHeader h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.profileHeader p {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.profileContent {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 40px;
+    justify-content: space-between;
+}
+
+.profileSidebar {
+    flex: 1;
+    max-width: 300px;
+    padding: 20px;
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.profileImage {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+    border: 4px solid #1db954;
+    object-fit: cover;
+}
+
+.profileSidebar h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.profileSidebar p {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.profileSidebar .editButton {
+    background-color: #1db954;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.profileSidebar .editButton:hover {
+    background-color: #1ed760;
+}
+
+.profileDetails {
+    flex: 3;
+    padding: 20px;
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.sectionTitle {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.opinionItem,
+.audioItem {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.opinionItem p,
+.audioItem p {
+    margin: 5px 0;
+}
+
+.audioItem a {
+    color: #1db954;
+    text-decoration: none;
+}
+
+.audioItem a:hover {
+    text-decoration: underline;
+}
+
+.uploadImageSection {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.buttonContainer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.profileImageContainer {
+    position: relative;
+    display: inline-block;
+}

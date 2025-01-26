@@ -1,6 +1,6 @@
 'use client'
 import {getArtists} from '../services/artistService'
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import ArtistList from "@/app/components/ArtistList";
 import {useAuth} from "@/app/AuthContext";
 
@@ -15,7 +15,11 @@ export default function ArtistsPage () {
     const [isSessionRestored, setIsSessionRestored] = useState(false)
 
     const [error, setError] = useState(null)
+    //new------------
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
 
+    const lastViewedArtist = useRef(null);
 
     useEffect(() => {
         const restore = async () => {
@@ -51,6 +55,20 @@ export default function ArtistsPage () {
         setFilteredArtists(filtered);
     }, [searchQuery, artists]);
 
+    //pagination logic
+    const indexOfLastArtist = currentPage * itemsPerPage;
+    const indexOfFirstArtist = indexOfLastArtist - itemsPerPage;
+    const currentArtists = filteredArtists.slice(indexOfFirstArtist, indexOfLastArtist);
+
+    const totalPages = Math.ceil(filteredArtists.length / itemsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const handleArtistClick = (artistId) => {
+        lastViewedArtist.current = artistId;
+        console.log(lastViewedArtist.current);
+    };
+
     if(!user || !isSessionRestored || loading){
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
     }
@@ -65,7 +83,16 @@ export default function ArtistsPage () {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"/>
-        <ArtistList artists={filteredArtists}/>
+            <ArtistList artists={currentArtists} onArtistClick={handleArtistClick}/>
+            <div className="pagination">
+                <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+                    Prev
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
+                    Next
+                </button>
+            </div>
         </div>
     );
 }

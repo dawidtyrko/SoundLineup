@@ -58,10 +58,28 @@ export async function updateGroup(groupId, groupData,token){
     return handleResponse(response);
 }
 
+export async function removeMember(groupId,token,artistId){
+    const response = await fetch(`${API_BASE_URL}/${groupId}/members/${artistId}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`}
+    })
+    return handleResponse(response);
+}
+
 export async function handleResponse(response){
     if (!response.ok) {
-        //const errorData = await response.json();
-        throw new Error(`${response.status} ${response.message}`);
+        let errorMessage = `${response.status}: An unknown error occurred`;
+        try {
+            const errorText = await response.text();
+            const errorData = JSON.parse(errorText);
+            errorMessage = `${errorData.message || "An unknown error occurred"}`;
+        } catch (parseError) {
+            console.error("Error parsing JSON from response:", parseError);
+            errorMessage = `${response.status}: ${response.statusText || "Unable to parse error response"}`;
+        }
+
+        throw new Error(errorMessage);
     }
     return response.json();
 }

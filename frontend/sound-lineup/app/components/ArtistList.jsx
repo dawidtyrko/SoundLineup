@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import classes from './ArtistList.module.css'
 import Image from "next/image";
-const ArtistList = ({artists}) =>{
+const ArtistList = ({artists, onArtistClick}) =>{
     return (
             <ul className={classes.artistList}>
                 {artists.map(artist => (
@@ -11,7 +11,7 @@ const ArtistList = ({artists}) =>{
                                 <Image src={`http://localhost:3001/${artist.profileImage}`} alt={artist.name} className={classes.artistImage}
                                        width={50} height={50}/>
                             )}
-                        <Link href={`/artists/${artist._id}`} className={classes.artistName}>{artist.name}</Link>
+                        <Link href={`/artists/${artist._id}`} className={classes.artistName} onClick={() =>onArtistClick(artist._id)}>{artist.name}</Link>
                         </div>
                     </li>
                 ))}

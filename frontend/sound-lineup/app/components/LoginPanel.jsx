@@ -27,12 +27,7 @@ const LoginPanel = () => {
             }
 
         } catch (err) {
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message); // Extract message from the server response
-            } else {
-                setError("Something went wrong. Please try again."); // Fallback error message
-            }
-            //setError(err.message || "Wrong credentials.");
+            setError(err.message || "Wrong credentials.");
         } finally {
             setLoading(false);
         }
@@ -42,7 +37,7 @@ const LoginPanel = () => {
         <div className={classes.formContainer}>
             <form onSubmit={handleSubmit}>
                 <h1 className={classes.headerOne}>Login</h1>
-                {error && <p className={classes.error}>Error: {error}</p>}
+                {error && <p className={classes.error}>{error}</p>}
 
                 <div className={classes.formField}>
                     <label htmlFor="name" className={classes.labelFields} style={{color:'black'}}>Name</label>

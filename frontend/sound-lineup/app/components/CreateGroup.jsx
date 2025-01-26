@@ -41,7 +41,7 @@ const CreateGroup = () => {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ isSubmitting }) => (
+                {({ isSubmitting,errors }) => (
                     <Form className="form">
                         <div className={classes.formField}>
                             <label htmlFor="name" className={classes.labelFields}>Name</label>
@@ -77,6 +77,8 @@ const CreateGroup = () => {
                         </div>
 
                         {isSubmitting && <p>Submitting...</p>}
+                        {errors.general && <div className={classes.error}>{errors.general}</div>}
+
 
                         <div className={classes.formField}>
                             <button type="submit" disabled={isSubmitting} className={classes.submitBtn}>

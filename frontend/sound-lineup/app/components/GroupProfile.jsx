@@ -9,26 +9,32 @@ import EditGroup from "@/app/components/EditGroup";
 import Link from "next/link";
 import {useAuth} from "@/app/AuthContext";
 import AddMemberForm from "@/app/components/AddMemberForm";
+import {removeMember} from "@/app/services/groupService";
 const GroupProfile = () =>{
     const {user,token,userType,login, logout} = useAuth()
     const [group,setGroup] = useState(user)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [error,setError] = useState(null)
     const [editing, setEditing] = useState(false)
-    const router = useRouter()
 
-    useEffect(()=>{
-        if(user){
-            setLoading(false)
-            setGroup(user)
-        }
-
-    },[user])
 
 
     const handleUpdateGroup = (updatedGroup) => {
         setGroup(updatedGroup)
         login(updatedGroup, token,userType);
+    }
+    const handleRemoveMember = async (artistId) => {
+        setLoading(true)
+        try {
+            const response = await removeMember(group._id, token, artistId)
+            setGroup(response.group)
+            login(response.group,token, userType);
+        }catch(err){
+            console.log(err)
+            setError(err.message || "Failed to remove member")
+        }finally{
+            setLoading(false)
+        }
     }
     if (loading) {
         return <ClipLoader color={"#123abc"} loading={loading} size={50} />;
@@ -50,6 +56,9 @@ const GroupProfile = () =>{
                     <li key={index}>
                         <Link href={`/artists/${member._id}`}>{member.name}</Link>
                         <p>Age: {member.age}</p>
+                        <button onClick={() => handleRemoveMember(member._id)}>
+                            Remove Member
+                        </button>
                     </li>
                 ))}
             </ul>

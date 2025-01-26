@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
-const {addMemberToGroup,addRating,changePassword, createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion,loginGroup } = require('../controllers/groupController');
+const {addMemberToGroup,addRating,changePassword, createGroup, getGroups, getGroupById, updateGroup, deleteGroup,addGroupOpinion,loginGroup,removeMemberFromGroup } = require('../controllers/groupController');
 const { groupValidator } = require('../middleware/groupValidator'); // Assuming you have a validator
 const authenticateToken  = require('../middleware/authenticateToken');
 const {passwordValidation} = require("../middleware/passwordValidator");
@@ -51,7 +51,7 @@ router.put('/:id', groupValidator, async (req, res) => {
     await updateGroup(req, res);
 });
 
-
+router.delete('/:groupId/members/:artistId', authenticateToken, removeMemberFromGroup);
 // Delete a Group by ID
 router.delete('/:id', deleteGroup);
 

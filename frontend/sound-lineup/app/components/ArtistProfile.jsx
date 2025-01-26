@@ -42,10 +42,24 @@ const ArtistProfile = () => {
 
     const handleDeleteAccount = async () => {
         setLoading(true);
-        try {
-            await deleteProfile(user._id, token);  // Call the deleteProfile function with artistId and token
-            logout();  // Log the user out after successful account deletion
 
+        try {
+            // Step 1: Delete Profile Image (if it exists)
+            if (artist.profileImage) {
+                try {
+                    const result = await deleteProfileImage(artist._id, token);
+                    setArtist(result.user); // Update artist state after image deletion
+                    login(result.user, token, userType); // Update context if needed
+                } catch (error) {
+                    console.error("Error deleting profile image:", error);
+                    alert("Failed to delete profile image. Please try again.");
+                    return; // Stop further deletion if image deletion fails
+                }
+            }
+
+            // Step 2: Delete Account
+            await deleteProfile(user._id, token); // Call the deleteProfile function with artistId and token
+            logout(); // Log the user out after successful account deletion
         } catch (error) {
             console.error("Error deleting account:", error);
             alert("There was an error deleting your account. Please try again.");

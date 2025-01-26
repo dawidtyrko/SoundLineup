@@ -45,7 +45,7 @@ const EditArtist = ({ artist,onUpdate }) => {
                 initialValues={{
                     name: artist.name,
                     age: artist.age,
-                    groupName: artist.groupId || '',
+                    groupName: artist.groupId ? artist.groupId.name : '',
                 }}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
@@ -53,7 +53,7 @@ const EditArtist = ({ artist,onUpdate }) => {
                 {({isSubmitting, errors}) => (
                     <Form>
 
-                        {errors.general && <p className={classes.error}>Error: {errors.general}</p>}
+                        {errors.general && <p className={classes.error}>{errors.general}</p>}
 
                         <div className={classes.formField}>
                             <label className={classes.labelFields}>

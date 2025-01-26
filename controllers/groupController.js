@@ -15,17 +15,13 @@ require("dotenv").config();
 const createGroup = async (req, res) => {
     const { name, password } = req.body;
     try {
-
+        const existingGroup = await Group.findOne({ name: name });
+        if (existingGroup) {
+            return res.status(400).json({ message: "A group with this name already exists." });
+        }
         const group = new Group({ name,password });
         const result = await group.save();
 
-        // Add groupId to each member
-        // if (members && members.length > 0) {
-        //     await Artist.updateMany(
-        //         { _id: { $in: members } },
-        //         { $set: { groupId: result._id } }
-        //     );
-        // }
 
         res.status(201).json({ message: "Group created", group: result });
     } catch (err) {
@@ -400,6 +396,55 @@ const deleteAudioLink = async (groupId, platform) => {
     }
 };
 
+const removeMemberFromGroup = async (req, res) => {
+    const { groupId, artistId } = req.params
+
+    try {
+        // Validate groupId and artistId
+        if (!Types.ObjectId.isValid(groupId) || !Types.ObjectId.isValid(artistId)) {
+            return res.status(400).json({ message: "Invalid ID format" });
+        }
+
+        // Find the group
+        const group = await Group.findById(groupId);
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        // Find the artist
+        const artist = await Artist.findById(artistId);
+        if (!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
+        // Check if the artist is a member of the group
+        if (!group.members.includes(artistId)) {
+            return res.status(400).json({ message: "Artist is not a member of this group" });
+        }
+
+        // Remove the artist from the group's members array
+        group.members = group.members.filter(member => member.toString() !== artistId);
+        await group.save();
+
+        // Clear the artist's groupId
+        artist.groupId = null;
+        await artist.save();
+
+        // Populate the updated group for the response
+        const updatedGroup = await Group.findById(groupId).populate('members', 'name age');
+
+        res.status(200).json({
+            message: "Artist removed from group",
+            group: updatedGroup,
+        });
+    } catch (err) {
+        console.error("Error removing member from group:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+
 
 module.exports = {
     createGroup,
@@ -414,5 +459,6 @@ module.exports = {
     addAudioLink,
     deleteAudioLink,
     addMemberToGroup,
-    changePassword
+    changePassword,
+    removeMemberFromGroup
 };

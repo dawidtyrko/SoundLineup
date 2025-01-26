@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
 
     const validateToken = useCallback(async () => {
         if (!token) {
-            console.log("No token found, skipping token validation.")
             return
         }
 
@@ -27,7 +26,6 @@ export const AuthProvider = ({ children }) => {
         }
 
         const data = await response.json();
-        console.log('Token validation successful:', data.message);
     }, [token]);
 
 
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }) => {
             const storedUserType = localStorage.getItem("userType");
 
             if (storedUser && storedToken && storedUserType) {
-                console.log("Restoring session...");
                 setUser(JSON.parse(storedUser));
                 setToken(storedToken);
                 setUserType(storedUserType);
@@ -47,13 +44,10 @@ export const AuthProvider = ({ children }) => {
                 if(storedToken){
                     await validateToken();
                 }
-                console.log("Session restored successfully");
             } else {
-                console.log("Session data missing in localStorage. Logging out.");
                 logout()
             }
         } catch (err) {
-            console.error("Error during session restoration:", err.message);
             logout()
         }
     }, [validateToken]);

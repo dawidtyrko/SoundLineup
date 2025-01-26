@@ -16,6 +16,10 @@ const createArtist = async (req, res) => {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
+        const existingArtist = await Artist.findOne({ name: name });
+        if (existingArtist) {
+            return res.status(400).json({ message: "An artist with this name already exists." });
+        }
         const artist = new Artist({
             name,
             age,
@@ -72,7 +76,7 @@ const loginArtist = async (req, res) => {
     const {name, password} = req.body;
 
     try{
-        const artist = await Artist.findOne({name})
+        const artist = await Artist.findOne({name}).populate('groupId','name')
         if(!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
@@ -115,6 +119,7 @@ const getArtistById = async (req, res) => {
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
+        console.log(artist)
         res.status(200).json({artist: artist});
     } catch (err) {
         console.error("Error retrieving artist:", err);
@@ -294,9 +299,6 @@ const deleteArtist = async (req, res) => {
         if (!artist) {
             return res.status(404).json({ message: "Artist not found" });
         }
-
-        await deleteProfileImage(req, res);
-
 
         if (artist.groupId) {
             await Group.findByIdAndUpdate(artist.groupId, { $pull: { members: artist._id } });
